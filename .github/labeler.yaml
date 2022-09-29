@@ -1,0 +1,3 @@
+# Modules
+":floppy_disk: elasticache-redis-cluster":
+- modules/elasticache-redis-cluster/**/*
