@@ -1,6 +1,6 @@
 locals {
   metadata = {
-    package = "terraform-aws-ec2"
+    package = "terraform-aws-db"
     version = trimspace(file("${path.module}/../../VERSION"))
     module  = basename(path.module)
     name    = var.name
@@ -120,7 +120,7 @@ resource "aws_elasticache_replication_group" "this" {
 
   ## Auth
   auth_token     = length(var.password) > 0 ? var.password : null
-  user_group_ids = var.user_groups
+  user_group_ids = length(var.user_groups) > 0 ? var.user_groups : null
 
 
   ## Encryption
