@@ -24,6 +24,14 @@ resource "aws_elasticache_user_group" "this" {
   user_group_id = var.name
   user_ids      = [var.default_user]
 
+  tags = merge(
+    {
+      "Name" = local.metadata.name
+    },
+    local.module_tags,
+    var.tags,
+  )
+
   lifecycle {
     ignore_changes = [user_ids]
   }
