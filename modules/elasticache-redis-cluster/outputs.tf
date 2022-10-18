@@ -34,7 +34,7 @@ output "node_instance_type" {
 }
 
 output "node_size" {
-  description = "The number of instance type used for the ElastiCache Redis cluster."
+  description = "The number of cache nodes (primary and replicas) for this ElastiCache Redis cluster will have."
   value       = aws_elasticache_replication_group.this.num_cache_clusters
 }
 

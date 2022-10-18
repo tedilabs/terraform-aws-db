@@ -207,7 +207,5 @@ resource "aws_elasticache_replication_group" "this" {
       )
       error_message = "Password can be specified only if in-transit encryption is enabled."
     }
-    ignore_changes = [
-    ]
   }
 }
