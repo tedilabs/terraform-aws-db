@@ -95,7 +95,7 @@ This module creates following resources.
 | <a name="output_name"></a> [name](#output\_name) | The name of the ElastiCache Redis cluster. |
 | <a name="output_network"></a> [network](#output\_network) | The configuration for network of the ElastiCache Redis cluster.<br>    `port` - The port number on each cache nodes to accept connections.<br>    `subnet_group` - The name of the cache subnet group used for.<br>    `preferred_availability_zones` - The list of AZs(Availability Zones) in which the ElastiCache Redis cluster nodes will be created. |
 | <a name="output_node_instance_type"></a> [node\_instance\_type](#output\_node\_instance\_type) | The instance type used for the ElastiCache Redis cluster. |
-| <a name="output_node_size"></a> [node\_size](#output\_node\_size) | The number of instance type used for the ElastiCache Redis cluster. |
+| <a name="output_node_size"></a> [node\_size](#output\_node\_size) | The number of cache nodes (primary and replicas) for this ElastiCache Redis cluster will have. |
 | <a name="output_nodes"></a> [nodes](#output\_nodes) | The list of all nodes are part of the ElastiCache Redis cluster. |
 | <a name="output_parameter_group"></a> [parameter\_group](#output\_parameter\_group) | The name of the parameter group associated with the ElastiCache Redis cluster. |
 | <a name="output_redis_version"></a> [redis\_version](#output\_redis\_version) | The version number of Redis used for the ElastiCache Redis cluster. The actual engine version used is returned in `redis_version_actual`. |
