@@ -37,13 +37,6 @@ locals {
     if startswith(var.redis_version, f.prefix)
   ][0]
 
-  parameters = merge(
-    {
-      "cluster-enabled" = var.sharding.enabled ? "yes" : "no"
-    },
-    var.parameter_group.parameters
-  )
-
   logging_destination_types = {
     "CLOUDWATCH_LOGS"  = "cloudwatch-logs"
     "KINESIS_FIREHOSE" = "kinesis-firehose"
@@ -58,7 +51,7 @@ resource "aws_elasticache_parameter_group" "this" {
   family      = local.family
 
   dynamic "parameter" {
-    for_each = local.parameters
+    for_each = var.parameter_group.parameters
 
     content {
       name  = parameter.key
