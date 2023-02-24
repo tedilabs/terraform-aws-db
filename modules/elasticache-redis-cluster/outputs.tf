@@ -65,7 +65,7 @@ output "network" {
     subnet_group                 = aws_elasticache_replication_group.this.subnet_group_name
     preferred_availability_zones = aws_elasticache_replication_group.this.preferred_cache_cluster_azs
 
-    default_security_group = one(module.security_group.*.id)
+    default_security_group = one(module.security_group[*].id)
     security_groups        = aws_elasticache_replication_group.this.security_group_ids
   }
 }

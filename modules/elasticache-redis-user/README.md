@@ -36,7 +36,7 @@ This module creates following resources.
 |------|-------------|------|---------|:--------:|
 | <a name="input_id"></a> [id](#input\_id) | (Required) The ID of the ElastiCache user. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The username of the ElastiCache user. It can have up to 40 characters, and must begin with a letter. It should not end with a hyphen or contain two consecutive hyphens. Valid characters: A-Z, a-z, 0-9, and - (hyphen). | `string` | n/a | yes |
-| <a name="input_access_string"></a> [access\_string](#input\_access\_string) | (Optional) Access permissions string used for this user. | `string` | `""` | no |
+| <a name="input_access_string"></a> [access\_string](#input\_access\_string) | (Optional) Access permissions string used for this user. Defaults to `off -@all`. | `string` | `"off -@all"` | no |
 | <a name="input_module_tags_enabled"></a> [module\_tags\_enabled](#input\_module\_tags\_enabled) | (Optional) Whether to create AWS Resource Tags for the module informations. | `bool` | `true` | no |
 | <a name="input_password_required"></a> [password\_required](#input\_password\_required) | (Optional) Whether a password is required for this user. Defaults to `false`. | `bool` | `false` | no |
 | <a name="input_passwords"></a> [passwords](#input\_passwords) | (Optional) A set of passwords used for this user. You can create up to two passwords for each user. | `set(string)` | `[]` | no |

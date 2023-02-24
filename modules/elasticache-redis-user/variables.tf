@@ -12,9 +12,9 @@ variable "name" {
 
 # INFO: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Clusters.RBAC.html#Access-string
 variable "access_string" {
-  description = "(Optional) Access permissions string used for this user."
+  description = "(Optional) Access permissions string used for this user. Defaults to `off -@all`."
   type        = string
-  default     = ""
+  default     = "off -@all"
   nullable    = false
 }
 
