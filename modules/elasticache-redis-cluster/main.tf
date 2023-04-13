@@ -30,6 +30,7 @@ locals {
     { name = "redis4.0", prefix = "4.0" },
     { name = "redis5.0", prefix = "5.0" },
     { name = "redis6.x", prefix = "6." },
+    { name = "redis7", prefix = "7." },
   ]
   family = [
     for f in local.supported_families :
