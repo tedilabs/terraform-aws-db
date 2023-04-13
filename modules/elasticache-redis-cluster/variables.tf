@@ -14,7 +14,7 @@ variable "description" {
 variable "redis_version" {
   description = "(Optional) The version number of Redis to be used for each nodes in the ElastiCache Redis cluster. If the version is 6 or higher, the major and minor version can be set, e.g., 6.2, or the minor version can be unspecified which will use the latest version at creation time, e.g., 6.x. Otherwise, specify the full version desired, e.g., 5.0.6. The actual engine version used is returned in the attribute `redis_version_actual`."
   type        = string
-  default     = "6.2"
+  default     = "7.0"
   nullable    = false
 }
 
