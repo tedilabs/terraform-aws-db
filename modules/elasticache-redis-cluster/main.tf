@@ -49,12 +49,14 @@ locals {
     "CLOUDWATCH_LOGS"  = "cloudwatch-logs"
     "KINESIS_FIREHOSE" = "kinesis-firehose"
   }
+
+  parameger_group_default_name = "${var.name}-${replace(local.family, ".", "-")}"
 }
 
 resource "aws_elasticache_parameter_group" "this" {
   count = var.parameter_group.enabled ? 1 : 0
 
-  name        = coalesce(var.parameter_group.name, var.name)
+  name        = coalesce(var.parameter_group.name, local.parameger_group_default_name)
   description = coalesce(var.parameter_group.description, "Customized Parameter Group for ${var.name} redis cluster. (v${var.redis_version})")
   family      = local.family
 
@@ -74,6 +76,10 @@ resource "aws_elasticache_parameter_group" "this" {
     local.module_tags,
     var.tags,
   )
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
