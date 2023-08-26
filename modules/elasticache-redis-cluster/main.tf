@@ -87,13 +87,6 @@ resource "aws_elasticache_parameter_group" "this" {
 # ElastiCache Cluster for Redis
 ###################################################
 
-# INFO: Not supported attributes
-# - `availability_zones` (Deprecated)
-# - `cluster_mode` (Deprecated)
-# - `number_cache_clusters ` (Deprecated)
-# - `replication_group_description` (Deprecated)
-# - `security_group_names` (Deprecated)
-#
 # Only need for secondary replicas
 # - `global_replication_group_id`
 resource "aws_elasticache_replication_group" "this" {
