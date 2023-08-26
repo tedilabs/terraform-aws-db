@@ -20,5 +20,5 @@ output "default_user" {
 
 output "users" {
   description = "The list of user IDs that belong to the user group."
-  value       = values(aws_elasticache_user_group_association.this).*.user_id
+  value       = values(aws_elasticache_user_group_association.this)[*].user_id
 }
