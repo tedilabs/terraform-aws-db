@@ -1,6 +1,14 @@
 version: 2
 updates:
-- package-ecosystem: "github-actions"
-  directory: "/"
+- package-ecosystem: github-actions
+  directory: /
   schedule:
-    interval: "daily"
+    interval: daily
+
+- package-ecosystem: terraform
+  directories:
+  - /modules/elasticache-redis-cluster
+  - /modules/elasticache-redis-user
+  - /modules/elasticache-redis-user-group
+  schedule:
+    interval: weekly
