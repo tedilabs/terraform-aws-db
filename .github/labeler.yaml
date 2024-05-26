@@ -1,3 +1,5 @@
 # Modules
 ":floppy_disk: elasticache-redis-cluster":
-- modules/elasticache-redis-cluster/**/*
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/elasticache-redis-cluster/**/*
