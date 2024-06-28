@@ -7,8 +7,6 @@ updates:
 
 - package-ecosystem: terraform
   directories:
-  - /modules/elasticache-redis-cluster
-  - /modules/elasticache-redis-user
-  - /modules/elasticache-redis-user-group
+  - /modules/*
   schedule:
     interval: weekly
