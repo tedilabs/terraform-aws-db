@@ -5,7 +5,7 @@ This module creates following resources.
 - `aws_elasticache_user_group`
 - `aws_elasticache_user_group_association` (optional)
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -54,4 +54,4 @@ This module creates following resources.
 | <a name="output_id"></a> [id](#output\_id) | The ID of the ElastiCache user group. |
 | <a name="output_name"></a> [name](#output\_name) | The name of the ElastiCache user group. |
 | <a name="output_users"></a> [users](#output\_users) | The list of user IDs that belong to the user group. |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

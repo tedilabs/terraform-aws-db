@@ -7,7 +7,7 @@ This module creates following resources.
 - `aws_security_group` (optional)
 - `aws_security_group_rule` (optional)
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -102,4 +102,4 @@ This module creates following resources.
 | <a name="output_redis_version_actual"></a> [redis\_version\_actual](#output\_redis\_version\_actual) | The actual version number of Redis used for the ElastiCache Redis cluster. Because ElastiCache pulls the latest minor or patch for a version, this attribute returns the running version of the cache engine. |
 | <a name="output_sharding"></a> [sharding](#output\_sharding) | The configuration for sharding of the ElastiCache Redis cluster. |
 | <a name="output_source"></a> [source](#output\_source) | The configuration for source backup of the ElastiCache Redis cluster to restore from.<br>    `backup_name` - The name of a snapshot from which to restore data into the new node group.<br>    `rdb_s3_arns` - The list of ARNs that identify Redis RDB snapshot files stored in Amazon S3. |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

@@ -4,7 +4,7 @@ This module creates following resources.
 
 - `aws_elasticache_user`
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -54,4 +54,4 @@ This module creates following resources.
 | <a name="output_id"></a> [id](#output\_id) | The ID of the ElastiCache user. |
 | <a name="output_name"></a> [name](#output\_name) | The name of the ElastiCache user. |
 | <a name="output_password_required"></a> [password\_required](#output\_password\_required) | Whether a password is required for this user. |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
