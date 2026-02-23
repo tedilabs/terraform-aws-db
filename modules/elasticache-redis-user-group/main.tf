@@ -18,11 +18,13 @@ locals {
 ###################################################
 # User Group of ElastiCache for Redis
 ###################################################
-
+# INFO: Not supported attributes
+# - `user_ids`
 resource "aws_elasticache_user_group" "this" {
-  engine        = "REDIS"
+  region = var.region
+
+  engine        = var.engine
   user_group_id = var.name
-  user_ids      = [var.default_user]
 
   tags = merge(
     {
@@ -39,6 +41,8 @@ resource "aws_elasticache_user_group" "this" {
 
 resource "aws_elasticache_user_group_association" "this" {
   for_each = var.users
+
+  region = var.region
 
   user_group_id = aws_elasticache_user_group.this.user_group_id
   user_id       = each.value

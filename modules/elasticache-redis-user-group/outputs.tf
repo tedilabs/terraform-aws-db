@@ -1,3 +1,8 @@
+output "region" {
+  description = "The AWS region this module resources resides in."
+  value       = aws_elasticache_user_group.this.region
+}
+
 output "id" {
   description = "The ID of the ElastiCache user group."
   value       = aws_elasticache_user_group.this.id
@@ -8,14 +13,14 @@ output "arn" {
   value       = aws_elasticache_user_group.this.arn
 }
 
+output "engine" {
+  description = "The cache engine used by the ElastiCache user group."
+  value       = upper(aws_elasticache_user_group.this.engine)
+}
+
 output "name" {
   description = "The name of the ElastiCache user group."
   value       = aws_elasticache_user_group.this.user_group_id
-}
-
-output "default_user" {
-  description = "The ID of default user."
-  value       = var.default_user
 }
 
 output "users" {
@@ -38,3 +43,11 @@ output "resource_group" {
     )
   )
 }
+
+# output "debug" {
+#   value = {
+#     for k, v in aws_elasticache_user_group.this :
+#     k => v
+#     if !contains(["arn", "region", "id", "user_group_id", "user_ids", "engine", "tags", "tags_all"], k)
+#   }
+# }

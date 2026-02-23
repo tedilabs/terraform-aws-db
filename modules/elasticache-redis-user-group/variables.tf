@@ -1,17 +1,30 @@
+variable "region" {
+  description = "(Optional) The region in which to create the module resources. If not provided, the module resources will be created in the provider's configured region."
+  type        = string
+  default     = null
+  nullable    = true
+}
+
+variable "engine" {
+  description = "(Optional) The cache engine for the ElastiCache user group. Valid values are `redis` and `valkey`. Defaults to `valkey`."
+  type        = string
+  default     = "valkey"
+  nullable    = false
+
+  validation {
+    condition     = contains(["redis", "valkey"], var.engine)
+    error_message = "Valid values for `engine` are `redis` and `valkey`."
+  }
+}
+
 variable "name" {
   description = "(Required) The name of the ElastiCache user group. It can have up to 40 characters, and must begin with a letter. It should not end with a hyphen or contain two consecutive hyphens. Valid characters: A-Z, a-z, 0-9, and - (hyphen)."
   type        = string
   nullable    = false
 }
 
-variable "default_user" {
-  description = "(Optional) The ID of default user. The user group needs to contain a user with the user name default."
-  type        = string
-  nullable    = false
-}
-
 variable "users" {
-  description = "(Optional) The list of user IDs that belong to the user group."
+  description = "(Optional) A set of user IDs that belong to the user group."
   type        = set(string)
   default     = []
   nullable    = false
@@ -35,9 +48,6 @@ variable "module_tags_enabled" {
 ###################################################
 # Resource Group
 ###################################################
-
-
-
 
 variable "resource_group" {
   description = <<EOF
