@@ -56,6 +56,8 @@ locals {
 resource "aws_elasticache_parameter_group" "this" {
   count = var.parameter_group.enabled ? 1 : 0
 
+  region = var.region
+
   name        = coalesce(var.parameter_group.name, local.parameger_group_default_name)
   description = coalesce(var.parameter_group.description, "Customized Parameter Group for ${var.name} redis cluster. (v${var.redis_version})")
   family      = local.family
@@ -90,6 +92,8 @@ resource "aws_elasticache_parameter_group" "this" {
 # Only need for secondary replicas
 # - `global_replication_group_id`
 resource "aws_elasticache_replication_group" "this" {
+  region = var.region
+
   replication_group_id = var.name
   description          = var.description
 

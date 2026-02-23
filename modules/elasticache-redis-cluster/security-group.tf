@@ -4,9 +4,11 @@
 
 module "security_group" {
   source  = "tedilabs/network/aws//modules/security-group"
-  version = "~> 0.26.0"
+  version = "~> 1.0.0"
 
   count = var.default_security_group.enabled ? 1 : 0
+
+  region = var.region
 
   name        = coalesce(var.default_security_group.name, local.metadata.name)
   description = var.default_security_group.description
@@ -22,8 +24,11 @@ module "security_group" {
     })
   ]
 
-  resource_group_enabled = false
-  module_tags_enabled    = false
+  revoke_rules_on_delete = true
+  resource_group = {
+    enabled = false
+  }
+  module_tags_enabled = false
 
   tags = merge(
     local.module_tags,

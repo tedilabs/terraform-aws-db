@@ -1,3 +1,8 @@
+output "region" {
+  description = "The AWS region this module resources resides in."
+  value       = aws_elasticache_replication_group.this.region
+}
+
 output "id" {
   description = "The ID of the ElastiCache Redis cluster."
   value       = aws_elasticache_replication_group.this.id
