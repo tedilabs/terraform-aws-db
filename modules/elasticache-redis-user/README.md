@@ -34,7 +34,6 @@ This module creates following resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_id"></a> [id](#input\_id) | (Required) The ID of the ElastiCache user. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The username of the ElastiCache user. It can have up to 40 characters, and must begin with a letter. It should not end with a hyphen or contain two consecutive hyphens. Valid characters: A-Z, a-z, 0-9, and - (hyphen). | `string` | n/a | yes |
 | <a name="input_access_string"></a> [access\_string](#input\_access\_string) | (Optional) Access permissions string used for this user. Defaults to `off -@all`. | `string` | `"off -@all"` | no |
 | <a name="input_authentication"></a> [authentication](#input\_authentication) | (Optional) A configuration of authentication for this user. `authentication` as defined below.<br/>    (Optional) `mode` - The authentication mode. Valid values are `iam`, `no-password-required`, and `password`. Defaults to `no-password`.<br/>    (Optional) `passwords` - A set of passwords used for this user. You can create up to two passwords for each user. Required if `mode` is set to `password`. | <pre>object({<br/>    mode      = optional(string, "no-password-required")<br/>    passwords = optional(set(string), [])<br/>  })</pre> | `{}` | no |

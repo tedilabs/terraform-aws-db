@@ -17,12 +17,6 @@ variable "engine" {
   }
 }
 
-variable "id" {
-  description = "(Required) The ID of the ElastiCache user."
-  type        = string
-  nullable    = false
-}
-
 variable "name" {
   description = "(Required) The username of the ElastiCache user. It can have up to 40 characters, and must begin with a letter. It should not end with a hyphen or contain two consecutive hyphens. Valid characters: A-Z, a-z, 0-9, and - (hyphen)."
   type        = string

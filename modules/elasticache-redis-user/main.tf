@@ -3,7 +3,7 @@ locals {
     package = "terraform-aws-db"
     version = trimspace(file("${path.module}/../../VERSION"))
     module  = basename(path.module)
-    name    = var.id
+    name    = var.name
   }
   module_tags = var.module_tags_enabled ? {
     "module.terraform.io/package"   = local.metadata.package
@@ -25,7 +25,7 @@ resource "aws_elasticache_user" "this" {
   region = var.region
 
   engine    = var.engine
-  user_id   = var.id
+  user_id   = var.name
   user_name = var.name
 
   access_string = var.access_string
