@@ -1,3 +1,22 @@
+variable "region" {
+  description = "(Optional) The region in which to create the module resources. If not provided, the module resources will be created in the provider's configured region."
+  type        = string
+  default     = null
+  nullable    = true
+}
+
+variable "engine" {
+  description = "(Optional) The cache engine for the ElastiCache user. Valid values are `redis` and `valkey`. Defaults to `valkey`."
+  type        = string
+  default     = "valkey"
+  nullable    = false
+
+  validation {
+    condition     = contains(["redis", "valkey"], var.engine)
+    error_message = "Valid values for `engine` are `redis` and `valkey`."
+  }
+}
+
 variable "id" {
   description = "(Required) The ID of the ElastiCache user."
   type        = string
@@ -18,18 +37,27 @@ variable "access_string" {
   nullable    = false
 }
 
-variable "password_required" {
-  description = "(Optional) Whether a password is required for this user. Defaults to `false`."
-  type        = bool
-  default     = false
-  nullable    = false
-}
+variable "authentication" {
+  description = <<EOF
+  (Optional) A configuration of authentication for this user. `authentication` as defined below.
+    (Optional) `mode` - The authentication mode. Valid values are `iam`, `no-password-required`, and `password`. Defaults to `no-password`.
+    (Optional) `passwords` - A set of passwords used for this user. You can create up to two passwords for each user. Required if `mode` is set to `password`.
+  EOF
+  type = object({
+    mode      = optional(string, "no-password-required")
+    passwords = optional(set(string), [])
+  })
+  default  = {}
+  nullable = false
 
-variable "passwords" {
-  description = "(Optional) A set of passwords used for this user. You can create up to two passwords for each user."
-  type        = set(string)
-  default     = []
-  nullable    = false
+  validation {
+    condition     = contains(["iam", "no-password-required", "password"], var.authentication.mode)
+    error_message = "Valid values for `authentication.mode` are `iam`, `no-password-required`, and `password`."
+  }
+  validation {
+    condition     = !(var.authentication.mode == "password" && length(var.authentication.passwords) == 0)
+    error_message = "At least one password must be provided when `authentication.mode` is set to `password`."
+  }
 }
 
 variable "tags" {
@@ -50,9 +78,6 @@ variable "module_tags_enabled" {
 ###################################################
 # Resource Group
 ###################################################
-
-
-
 
 variable "resource_group" {
   description = <<EOF

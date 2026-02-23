@@ -18,15 +18,25 @@ locals {
 ###################################################
 # User of ElastiCache for Redis
 ###################################################
-
+# INFO: Deprecated attributes
+# - `no_password_required`
+# - `passwords`
 resource "aws_elasticache_user" "this" {
-  engine    = "REDIS"
+  region = var.region
+
+  engine    = var.engine
   user_id   = var.id
   user_name = var.name
 
-  access_string        = var.access_string
-  no_password_required = !var.password_required
-  passwords            = var.passwords
+  access_string = var.access_string
+
+  authentication_mode {
+    type = var.authentication.mode
+    passwords = (var.authentication.mode == "password"
+      ? var.authentication.passwords
+      : null
+    )
+  }
 
   tags = merge(
     {
