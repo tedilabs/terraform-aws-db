@@ -15,72 +15,17 @@ locals {
 }
 
 locals {
+  ip_address_types = {
+    "IPv4"      = "ipv4"
+    "IPv6"      = "ipv6"
+    "DUALSTACK" = "dual_stack"
+  }
+
   is_data_tiering_type = replace(var.node_instance_type, "/^cache\\.[a-z0-9]?d\\..*$/", "1") == "1" ? true : false
-}
-
-
-###################################################
-# Parameter Group of ElastiCache Cluster for Redis
-###################################################
-
-locals {
-  supported_families = [
-    { name = "redis2.8", prefix = "2.8" },
-    { name = "redis3.2", prefix = "3.2" },
-    { name = "redis4.0", prefix = "4.0" },
-    { name = "redis5.0", prefix = "5.0" },
-    { name = "redis6.x", prefix = "6." },
-    { name = "redis7", prefix = "7." },
-  ]
-  family = [
-    for f in local.supported_families :
-    f.name
-    if startswith(var.redis_version, f.prefix)
-  ][0]
-
-  parameters = merge(
-    {
-      "cluster-enabled" = var.sharding.enabled ? "yes" : "no"
-    },
-    var.parameter_group.parameters
-  )
 
   logging_destination_types = {
     "CLOUDWATCH_LOGS"  = "cloudwatch-logs"
     "KINESIS_FIREHOSE" = "kinesis-firehose"
-  }
-
-  parameger_group_default_name = "${var.name}-${replace(local.family, ".", "-")}"
-}
-
-resource "aws_elasticache_parameter_group" "this" {
-  count = var.parameter_group.enabled ? 1 : 0
-
-  region = var.region
-
-  name        = coalesce(var.parameter_group.name, local.parameger_group_default_name)
-  description = coalesce(var.parameter_group.description, "Customized Parameter Group for ${var.name} redis cluster. (v${var.redis_version})")
-  family      = local.family
-
-  dynamic "parameter" {
-    for_each = local.parameters
-
-    content {
-      name  = parameter.key
-      value = parameter.value
-    }
-  }
-
-  tags = merge(
-    {
-      "Name" = local.metadata.name
-    },
-    local.module_tags,
-    var.tags,
-  )
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
@@ -89,24 +34,61 @@ resource "aws_elasticache_parameter_group" "this" {
 # ElastiCache Cluster for Redis
 ###################################################
 
-# Only need for secondary replicas
-# - `global_replication_group_id`
+# INFO: Not supported attributes
+# - `security_group_names`
 resource "aws_elasticache_replication_group" "this" {
   region = var.region
 
   replication_group_id = var.name
   description          = var.description
 
-  engine                  = "redis"
-  engine_version          = var.redis_version
-  node_type               = var.node_instance_type
-  num_cache_clusters      = !var.sharding.enabled ? var.node_size : null
-  num_node_groups         = var.sharding.enabled ? var.sharding.shard_size : null
-  replicas_per_node_group = var.sharding.enabled ? var.sharding.replicas : null
+
+  ## Engine
+  engine         = var.engine.type
+  engine_version = var.engine.version
+
+
+  ## Nodes
+  cluster_mode = lower(var.cluster_mode.state)
+  node_type    = var.node_instance_type
+
+  num_cache_clusters = var.cluster_mode.state != "ENABLED" ? var.node_size : null
+
+  num_node_groups = var.cluster_mode.state == "ENABLED" ? var.cluster_mode.shard_size : null
+  replicas_per_node_group = (var.cluster_mode.state == "ENABLED"
+    ? (length(var.cluster_mode.shard_configurations) > 0
+      ? null
+      : var.cluster_mode.replicas
+    )
+    : null
+  )
+
+  dynamic "node_group_configuration" {
+    for_each = (var.cluster_mode.state == "ENABLED" && length(var.cluster_mode.shard_configurations) > 0
+      ? var.cluster_mode.shard_configurations
+      : []
+    )
+    iterator = shard
+
+    content {
+      node_group_id = shard.value.id
+      slots         = shard.value.slots
+      replica_count = shard.value.replicas != null ? shard.value.replicas : var.cluster_mode.replicas
+
+      primary_availability_zone  = shard.value.primary_availability_zone
+      replica_availability_zones = shard.value.secondary_availability_zones
+
+      primary_outpost_arn  = shard.value.primary_outpost
+      replica_outpost_arns = shard.value.secondary_outposts
+    }
+  }
 
 
   ## Network
-  port                        = var.port
+  port         = var.port
+  network_type = local.ip_address_types[var.ip_address_type]
+  ip_discovery = local.ip_address_types[var.discovery_ip_address_type]
+
   subnet_group_name           = var.subnet_group
   preferred_cache_cluster_azs = var.preferred_availability_zones
   security_group_ids = (var.default_security_group.enabled
@@ -116,38 +98,43 @@ resource "aws_elasticache_replication_group" "this" {
 
 
   ## Parameters
-  parameter_group_name = (var.parameter_group.enabled
+  parameter_group_name = (var.default_parameter_group.enabled
     ? aws_elasticache_parameter_group.this[0].name
-    : var.custom_parameter_group
+    : var.parameter_group
   )
 
 
   ## Auth
-  auth_token     = length(var.password) > 0 ? var.password : null
-  user_group_ids = length(var.user_groups) > 0 ? var.user_groups : null
+  auth_token                 = length(var.password) > 0 ? var.password : null
+  auth_token_update_strategy = length(var.password) > 0 ? var.password_update_strategy : null
+  user_group_ids             = length(var.user_groups) > 0 ? var.user_groups : null
 
 
   ## Encryption
   at_rest_encryption_enabled = var.encryption_at_rest.enabled
   kms_key_id                 = var.encryption_at_rest.kms_key
   transit_encryption_enabled = var.encryption_in_transit.enabled
-
-
-  ## Backup
-  snapshot_window           = var.backup_window
-  snapshot_retention_limit  = var.backup_enabled ? var.backup_retention : 0
-  final_snapshot_identifier = var.backup_final_snapshot_name
-
-
-  ## Source
-  snapshot_arns = var.source_rdb_s3_arns
-  snapshot_name = var.source_backup_name
+  transit_encryption_mode    = var.apply_immediately ? var.encryption_in_transit.mode : null
 
 
   ## Maintenance
-  maintenance_window         = var.maintenance_window
-  auto_minor_version_upgrade = var.auto_upgrade_minor_version_enabled
-  notification_topic_arn     = var.notification_sns_topic
+  maintenance_window         = var.maintenance.window
+  auto_minor_version_upgrade = var.maintenance.auto_upgrade_minor_version_enabled
+  notification_topic_arn     = var.maintenance.notification_sns_topic
+
+
+  ## Backup
+  snapshot_retention_limit = (var.backup.enabled
+    ? var.backup.retention
+    : 0
+  )
+  snapshot_window           = var.backup.window
+  final_snapshot_identifier = var.backup.final_snapshot_name
+
+
+  ## Restore
+  snapshot_name = var.restore.backup_name
+  snapshot_arns = var.restore.rdb_s3_arns
 
 
   ## Logging
@@ -158,8 +145,8 @@ resource "aws_elasticache_replication_group" "this" {
     content {
       log_type         = "slow-log"
       log_format       = lower(logging.value.format)
-      destination_type = local.logging_destination_types[logging.value.destination_type]
-      destination      = logging.value.destination
+      destination_type = local.logging_destination_types[logging.value.destination.type]
+      destination      = logging.value.destination.name
     }
   }
   dynamic "log_delivery_configuration" {
@@ -169,8 +156,8 @@ resource "aws_elasticache_replication_group" "this" {
     content {
       log_type         = "engine-log"
       log_format       = lower(logging.value.format)
-      destination_type = local.logging_destination_types[logging.value.destination_type]
-      destination      = logging.value.destination
+      destination_type = local.logging_destination_types[logging.value.destination.type]
+      destination      = logging.value.destination.name
     }
   }
 
@@ -195,21 +182,4 @@ resource "aws_elasticache_replication_group" "this" {
     local.module_tags,
     var.tags,
   )
-
-  lifecycle {
-    precondition {
-      condition = anytrue([
-        !var.multi_az_enabled,
-        var.multi_az_enabled && var.auto_failover_enabled,
-      ])
-      error_message = "If Muti-AZ Support is enabled, `auto_failover_enabled` must also be enabled."
-    }
-    precondition {
-      condition = (length(var.password) > 0
-        ? var.encryption_in_transit.enabled
-        : true
-      )
-      error_message = "Password can be specified only if in-transit encryption is enabled."
-    }
-  }
 }

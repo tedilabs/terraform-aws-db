@@ -1,3 +1,8 @@
+data "aws_elasticache_subnet_group" "this" {
+  name = var.subnet_group
+}
+
+
 ###################################################
 # Security Group
 ###################################################
@@ -12,7 +17,7 @@ module "security_group" {
 
   name        = coalesce(var.default_security_group.name, local.metadata.name)
   description = var.default_security_group.description
-  vpc_id      = var.vpc_id
+  vpc_id      = data.aws_elasticache_subnet_group.this.vpc_id
 
   ingress_rules = [
     for i, rule in var.default_security_group.ingress_rules :

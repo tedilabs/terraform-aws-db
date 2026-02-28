@@ -1,0 +1,107 @@
+[
+  {
+    "engine": "memcached",
+    "engine_version": "1.4.14",
+    "parameter_group_family": "memcached1.4"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.4.24",
+    "parameter_group_family": "memcached1.4"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.4.33",
+    "parameter_group_family": "memcached1.4"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.4.34",
+    "parameter_group_family": "memcached1.4"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.4.5",
+    "parameter_group_family": "memcached1.4"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.5.10",
+    "parameter_group_family": "memcached1.5"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.5.16",
+    "parameter_group_family": "memcached1.5"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.6.12",
+    "parameter_group_family": "memcached1.6"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.6.17",
+    "parameter_group_family": "memcached1.6"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.6.22",
+    "parameter_group_family": "memcached1.6"
+  },
+  {
+    "engine": "memcached",
+    "engine_version": "1.6.6",
+    "parameter_group_family": "memcached1.6"
+  },
+  {
+    "engine": "redis",
+    "engine_version": "4.0.10",
+    "parameter_group_family": "redis4.0"
+  },
+  {
+    "engine": "redis",
+    "engine_version": "5.0.6",
+    "parameter_group_family": "redis5.0"
+  },
+  {
+    "engine": "redis",
+    "engine_version": "6.0",
+    "parameter_group_family": "redis6.x"
+  },
+  {
+    "engine": "redis",
+    "engine_version": "6.2",
+    "parameter_group_family": "redis6.x"
+  },
+  {
+    "engine": "redis",
+    "engine_version": "7.0",
+    "parameter_group_family": "redis7"
+  },
+  {
+    "engine": "redis",
+    "engine_version": "7.1",
+    "parameter_group_family": "redis7"
+  },
+  {
+    "engine": "valkey",
+    "engine_version": "7.2",
+    "parameter_group_family": "valkey7"
+  },
+  {
+    "engine": "valkey",
+    "engine_version": "8.0",
+    "parameter_group_family": "valkey8"
+  },
+  {
+    "engine": "valkey",
+    "engine_version": "8.1",
+    "parameter_group_family": "valkey8"
+  },
+  {
+    "engine": "valkey",
+    "engine_version": "8.2",
+    "parameter_group_family": "valkey8"
+  }
+]
