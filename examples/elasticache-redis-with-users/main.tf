@@ -3,6 +3,45 @@ provider "aws" {
 }
 
 
+module "vpc" {
+  source  = "tedilabs/network/aws//modules/vpc"
+  version = "~> 1.2.0"
+
+  name = "test"
+
+  ipv4_cidrs = [
+    { cidr = "10.0.0.0/16" },
+  ]
+}
+
+module "subnet_group" {
+  source  = "tedilabs/network/aws//modules/subnet-group"
+  version = "~> 1.2.0"
+
+  name   = "test-data-managed-elasticache"
+  vpc_id = module.vpc.id
+
+  subnets = {
+    "test-data-managed-elasticache-001/az1" = {
+      availability_zone_id = "use1-az1"
+      ipv4_cidr            = "10.0.10.0/24"
+    }
+    "test-data-managed-elasticache-002/az2" = {
+      availability_zone_id = "use1-az2"
+      ipv4_cidr            = "10.0.11.0/24"
+    }
+    "test-data-managed-elasticache-003/az3" = {
+      availability_zone_id = "use1-az3"
+      ipv4_cidr            = "10.0.12.0/24"
+    }
+  }
+  elasticache_subnet_group = {
+    enabled = true
+    name    = "test-elasticache"
+  }
+}
+
+
 ###################################################
 # ElastiCache Redis Cluster
 ###################################################
@@ -15,9 +54,15 @@ module "cluster" {
   name        = "example-redis-single"
   description = "Managed by Terraform."
 
-  redis_version      = "6.2"
+  engine = {
+    type    = "redis"
+    version = "7.1"
+  }
   node_instance_type = "cache.t4g.micro"
   node_size          = 1
+
+  vpc_id       = module.vpc.id
+  subnet_group = module.subnet_group.elasticache_subnet_group.name
 
   user_groups = [module.user_group.id]
 
@@ -40,9 +85,10 @@ module "user_group" {
   # source  = "tedilabs/db/aws//modules/elasticache-redis-user-group"
   # version = "~> 0.2.0"
 
-  name         = "example"
-  default_user = module.user["example-default"].id
-  users        = [module.user["example-admin"].id]
+  engine = "redis"
+
+  name  = "example"
+  users = [module.user["example-admin"].id]
 
   tags = {
     "project" = "terraform-aws-db-examples"
@@ -57,19 +103,21 @@ module "user_group" {
 locals {
   users = [
     {
-      id   = "example-default"
       name = "default"
 
-      access_string     = "on ~* -@all +@read"
-      password_required = false
+      access_string = "on ~* -@all +@read"
+      authentication = {
+        mode = "no-password-required"
+      }
     },
     {
-      id   = "example-admin"
       name = "admin"
 
-      access_string     = "on ~* +@all"
-      password_required = true
-      passwords         = ["MyPassWord!Q@W#E", "MyPassW0rd!@QW#$ER"]
+      access_string = "on ~* +@all"
+      authentication = {
+        mode      = "password"
+        passwords = ["MyPassWord!Q@W#E", "MyPassW0rd!@QW#$ER"]
+      }
     },
   ]
 }
@@ -81,15 +129,14 @@ module "user" {
 
   for_each = {
     for user in try(local.users, []) :
-    user.id => user
+    user.name => user
   }
 
-  id   = each.key
-  name = each.value.name
+  engine = "redis"
+  name   = each.value.name
 
-  access_string     = try(each.value.access_string, null)
-  password_required = try(each.value.password_required, true)
-  passwords         = try(each.value.passwords, [])
+  access_string  = try(each.value.access_string, null)
+  authentication = try(each.value.authentication, null)
 
   tags = {
     "project" = "terraform-aws-db-examples"

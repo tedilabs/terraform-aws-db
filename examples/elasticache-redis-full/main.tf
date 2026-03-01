@@ -3,6 +3,45 @@ provider "aws" {
 }
 
 
+module "vpc" {
+  source  = "tedilabs/network/aws//modules/vpc"
+  version = "~> 1.2.0"
+
+  name = "test"
+
+  ipv4_cidrs = [
+    { cidr = "10.0.0.0/16" },
+  ]
+}
+
+module "subnet_group" {
+  source  = "tedilabs/network/aws//modules/subnet-group"
+  version = "~> 1.2.0"
+
+  name   = "test-data-managed-elasticache"
+  vpc_id = module.vpc.id
+
+  subnets = {
+    "test-data-managed-elasticache-001/az1" = {
+      availability_zone_id = "use1-az1"
+      ipv4_cidr            = "10.0.10.0/24"
+    }
+    "test-data-managed-elasticache-002/az2" = {
+      availability_zone_id = "use1-az2"
+      ipv4_cidr            = "10.0.11.0/24"
+    }
+    "test-data-managed-elasticache-003/az3" = {
+      availability_zone_id = "use1-az3"
+      ipv4_cidr            = "10.0.12.0/24"
+    }
+  }
+  elasticache_subnet_group = {
+    enabled = true
+    name    = "test-elasticache"
+  }
+}
+
+
 ###################################################
 # ElastiCache Redis Cluster
 ###################################################
@@ -15,20 +54,25 @@ module "cluster" {
   name        = "example-redis-full"
   description = "Managed by Terraform."
 
-  redis_version      = "6.2"
+  engine = {
+    type    = "redis"
+    version = "7.1"
+  }
   node_instance_type = "cache.t4g.micro"
   # node_size          = 1
-  sharding = {
-    enabled    = true
+  cluster_mode = {
+    state      = "ENABLED"
     shard_size = 3
     replicas   = 2
   }
 
 
   ## Network
+  ip_address_type              = "DUALSTACK"
+  discovery_ip_address_type    = "IPv4"
   port                         = 6379
-  vpc_id                       = null
-  subnet_group                 = null
+  vpc_id                       = module.vpc.id
+  subnet_group                 = module.subnet_group.elasticache_subnet_group.name
   preferred_availability_zones = []
 
   default_security_group = {
@@ -38,7 +82,8 @@ module "cluster" {
 
     ingress_rules = [
       {
-        cidr_blocks = ["0.0.0.0/0"]
+        id         = "all"
+        ipv4_cidrs = ["0.0.0.0/0"]
       }
     ]
   }
@@ -46,7 +91,7 @@ module "cluster" {
 
 
   ## Parameters
-  parameter_group = {
+  default_parameter_group = {
     enabled     = true
     name        = "example-redis-full-parameter-group"
     description = "Managed by Terraform."
@@ -57,12 +102,13 @@ module "cluster" {
       "rename-commands"          = "KEYS BLOCKED"
     }
   }
-  custom_parameter_group = null
+  parameter_group = null
 
 
   ## Auth
-  password    = sensitive("helloworld!#!!1234")
-  user_groups = []
+  password                 = sensitive("helloworld!#!!1234")
+  password_update_strategy = "ROTATE"
+  user_groups              = []
 
 
   ## Encryption
@@ -75,22 +121,28 @@ module "cluster" {
   }
 
 
-  ## Backup
-  backup_enabled             = true
-  backup_window              = "16:00-17:00"
-  backup_retention           = 1
-  backup_final_snapshot_name = "example-redis-full-final"
-
-
-  ## Source
-  source_backup_name = null
-  source_rdb_s3_arns = null
-
-
   ## Maintenance
-  maintenance_window                 = "fri:18:00-fri:20:00"
-  auto_upgrade_minor_version_enabled = true
-  notification_sns_topic             = null
+  maintenance = {
+    window                             = "fri:18:00-fri:20:00"
+    auto_upgrade_minor_version_enabled = true
+    notification_sns_topic             = null
+  }
+
+  ## Backup
+  backup = {
+    enabled             = true
+    window              = "16:00-17:00"
+    retention           = 1
+    final_snapshot_name = "example-redis-full-final"
+  }
+
+
+  ## Restore
+  restore = {
+    backup_name = null
+    rdb_s3_arns = null
+  }
+
 
 
   ## Logging
@@ -117,7 +169,7 @@ module "cluster" {
 
   timeouts = {
     create = "60m"
-    update = "40m"
+    update = "45m"
     delete = "40m"
   }
 
