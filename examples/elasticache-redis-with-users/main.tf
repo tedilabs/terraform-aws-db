@@ -68,6 +68,7 @@ module "cluster" {
 
   encryption_in_transit = {
     enabled = true
+    mode    = "required"
   }
 
   tags = {

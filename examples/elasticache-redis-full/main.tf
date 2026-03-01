@@ -68,7 +68,7 @@ module "cluster" {
 
 
   ## Network
-  ip_address_type              = "DUALSTACK"
+  ip_address_type              = "IPv4"
   discovery_ip_address_type    = "IPv4"
   port                         = 6379
   vpc_id                       = module.vpc.id
@@ -118,6 +118,7 @@ module "cluster" {
   }
   encryption_in_transit = {
     enabled = true
+    mode    = "required"
   }
 
 
