@@ -96,7 +96,7 @@ output "network" {
       v => k
     }[aws_elasticache_replication_group.this.ip_discovery]
 
-    vpc_id                       = data.aws_elasticache_subnet_group.this.vpc_id
+    vpc_id                       = var.vpc_id
     subnet_group                 = aws_elasticache_replication_group.this.subnet_group_name
     preferred_availability_zones = aws_elasticache_replication_group.this.preferred_cache_cluster_azs
 

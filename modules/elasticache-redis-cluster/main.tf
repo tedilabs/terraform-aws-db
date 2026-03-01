@@ -107,7 +107,7 @@ resource "aws_elasticache_replication_group" "this" {
   ## Auth
   auth_token                 = length(var.password) > 0 ? var.password : null
   auth_token_update_strategy = length(var.password) > 0 ? var.password_update_strategy : null
-  user_group_ids             = length(var.user_groups) > 0 ? var.user_groups : null
+  user_group_ids             = var.user_groups
 
 
   ## Encryption

@@ -152,6 +152,12 @@ variable "discovery_ip_address_type" {
   }
 }
 
+variable "vpc_id" {
+  description = "(Required) The ID of the VPC in which the ElastiCache Redis cluster will be created."
+  type        = string
+  nullable    = false
+}
+
 variable "subnet_group" {
   description = "(Required) The name of the cache subnet group to be used for the ElastiCache Redis cluster."
   type        = string
