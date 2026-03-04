@@ -299,6 +299,14 @@ variable "encryption_at_rest" {
   })
   default  = {}
   nullable = false
+
+  validation {
+    condition = anytrue([
+      var.encryption_at_rest.kms_key == null,
+      var.encryption_at_rest.kms_key != null && startswith(var.encryption_at_rest.kms_key, "arn:aws")
+    ])
+    error_message = "When `encryption_at_rest.kms_key` is specified, it must be a valid ARN of the KMS key."
+  }
 }
 
 variable "encryption_in_transit" {
