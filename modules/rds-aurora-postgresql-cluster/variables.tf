@@ -96,7 +96,7 @@ variable "admin_user" {
       mode = optional(string, "SECRETS_MANAGER")
       secrets_manager_secret = optional(object({
         kms_key = optional(string)
-      }))
+      }), {})
     }), {})
   })
   default  = {}
@@ -112,6 +112,12 @@ variable "admin_user" {
 ###################################################
 # Network
 ###################################################
+
+variable "vpc_id" {
+  description = "(Required) The ID of the VPC in which the Aurora PostgreSQL cluster's default security group will be created."
+  type        = string
+  nullable    = false
+}
 
 variable "subnet_group" {
   description = "(Required) The name of the DB subnet group to be used for the RDS Aurora PostgreSQL cluster."
@@ -138,8 +144,41 @@ variable "network_type" {
   }
 }
 
-variable "vpc_security_groups" {
-  description = "(Optional) A list of VPC security group IDs to associate with the cluster."
+variable "default_security_group" {
+  description = <<EOF
+  (Optional) The configuration of the default security group for the Aurora PostgreSQL cluster. `default_security_group` as defined below.
+    (Optional) `enabled` - Whether to create the default security group. Defaults to `true`.
+    (Optional) `name` - The name of the default security group. If not provided, the cluster name is used for the name of security group.
+    (Optional) `description` - The description of the default security group.
+    (Optional) `ingress_rules` - A list of ingress rules in a security group. You don't need to specify `protocol`, `from_port`, `to_port`. They are fixed to TCP on the cluster `port`. Just specify source information. Defaults to `[]` (no ingress; callers must grant access explicitly). Each block of `ingress_rules` as defined below.
+      (Required) `id` - The ID of the ingress rule. This value is only used internally within Terraform code.
+      (Optional) `description` - The description of the rule.
+      (Optional) `ipv4_cidrs` - The IPv4 network ranges to allow, in CIDR notation.
+      (Optional) `ipv6_cidrs` - The IPv6 network ranges to allow, in CIDR notation.
+      (Optional) `prefix_lists` - The prefix list IDs to allow.
+      (Optional) `security_groups` - The source security group IDs to allow.
+      (Optional) `self` - Whether the security group itself will be added as a source to this ingress rule.
+  EOF
+  type = object({
+    enabled     = optional(bool, true)
+    name        = optional(string)
+    description = optional(string, "Managed by Terraform.")
+    ingress_rules = optional(list(object({
+      id              = string
+      description     = optional(string, "Managed by Terraform.")
+      ipv4_cidrs      = optional(list(string), [])
+      ipv6_cidrs      = optional(list(string), [])
+      prefix_lists    = optional(list(string), [])
+      security_groups = optional(list(string), [])
+      self            = optional(bool, false)
+    })), [])
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "security_groups" {
+  description = "(Optional) A list of security group IDs to assign to the cluster."
   type        = list(string)
   default     = []
   nullable    = false
@@ -313,10 +352,10 @@ variable "instances" {
   default  = []
   nullable = false
 
-  # validation {
-  #   condition     = length(var.instances) > 0
-  #   error_message = "At least one instance must be defined."
-  # }
+  validation {
+    condition     = length(var.instances) > 0
+    error_message = "At least one instance must be defined."
+  }
   validation {
     condition     = length(distinct(var.instances[*].identifier)) == length(var.instances)
     error_message = "Each instance `identifier` must be unique."

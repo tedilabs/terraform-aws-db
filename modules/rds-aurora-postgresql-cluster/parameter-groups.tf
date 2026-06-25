@@ -2,6 +2,8 @@
 # Cluster Parameter Group
 ###################################################
 
+# INFO: Not supported attributes
+# - `name_prefix`                      (module owns deterministic naming)
 resource "aws_rds_cluster_parameter_group" "this" {
   count = var.cluster_parameter_group.create ? 1 : 0
 
@@ -17,7 +19,7 @@ resource "aws_rds_cluster_parameter_group" "this" {
     content {
       name         = parameter.value.name
       value        = parameter.value.value
-      apply_method = try(parameter.value.apply_method, "immediate")
+      apply_method = parameter.value.apply_method
     }
   }
 
@@ -39,6 +41,8 @@ resource "aws_rds_cluster_parameter_group" "this" {
 # DB Parameter Group (Instance Level)
 ###################################################
 
+# INFO: Not supported attributes
+# - `name_prefix`                      (module owns deterministic naming)
 resource "aws_db_parameter_group" "this" {
   count = var.db_parameter_group.create ? 1 : 0
 
@@ -54,7 +58,7 @@ resource "aws_db_parameter_group" "this" {
     content {
       name         = parameter.value.name
       value        = parameter.value.value
-      apply_method = try(parameter.value.apply_method, "immediate")
+      apply_method = parameter.value.apply_method
     }
   }
 

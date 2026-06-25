@@ -2,6 +2,8 @@
 # Custom Cluster Endpoints
 ###################################################
 
+# INFO: Not supported attributes
+# - `custom_endpoint_type = "WRITER"`  (invalid for custom endpoints; only `READER`/`ANY` are valid)
 resource "aws_rds_cluster_endpoint" "this" {
   for_each = {
     for endpoint in var.custom_endpoints :

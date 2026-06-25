@@ -20,12 +20,21 @@ locals {
 ###################################################
 
 # INFO: Not supported attributes
-# - `cluster_identifier_prefix`
-# - `master_password` (use `manage_master_user_password`)
-# - `replication_source_identifier` (use dedicated cross-region read replica module)
-# - `snapshot_identifier` (use dedicated restore module)
-# - `restore_to_point_in_time` (use dedicated restore module)
-# - `global_cluster_identifier` (use dedicated global cluster module)
+# - `cluster_identifier_prefix`        (module owns deterministic naming via `name`)
+# - `master_password` / `master_password_wo` (use Secrets Manager via `manage_master_user_password`)
+# - `replication_source_identifier`    (use a dedicated cross-region read-replica module)
+# - `snapshot_identifier`              (use a dedicated restore module)
+# - `restore_to_point_in_time`         (use a dedicated restore module)
+# - `global_cluster_identifier`        (use a dedicated global-cluster module)
+# - `s3_import`                        (Aurora MySQL only; not applicable to PostgreSQL)
+# - `scaling_configuration`            (Serverless v1, EOL 2025-03-31; use `serverlessv2_scaling_configuration`)
+# - `db_instance_parameter_group_name` (used only during major-version upgrade flows; out of scope)
+# - `domain` / `domain_iam_role_name`  (Kerberos/AD auth; out of scope)
+# - `enable_global_write_forwarding`   (global database feature; out of scope)
+# - `ca_certificate_identifier`        (cluster-level CA override; out of scope)
+# INFO: Legacy / not used attributes
+# - `cluster_members`                  (computed member list; member list exposed via the `instances` output)
+# - `engine_mode = "serverless"|"parallelquery"|"global"|"multimaster"` (legacy modes; module pins `provisioned`)
 resource "aws_rds_cluster" "this" {
   region = var.region
 
@@ -33,12 +42,7 @@ resource "aws_rds_cluster" "this" {
 
   engine         = "aurora-postgresql"
   engine_version = var.engine_version
-  # INFO: Only `provisioned` is currently supported for Aurora PostgreSQL.
-  # `serverless` — Only for Aurora Serverless v1, which reached end of life on March 31, 2025. Use provisioned with db.serverless instance class for Serverless v2 instead.
-  # `parallelquery` — Legacy mode for Aurora MySQL 5.6 only. Since Aurora MySQL 2.09+, parallel query is available in provisioned mode via the aurora_parallel_query parameter.
-  # `global` — Legacy mode for Aurora MySQL 5.6 (≤1.21) only. Current Aurora Global Database uses provisioned mode with global_cluster_identifier.
-  # `multimaster` — Deprecated. Was limited to Aurora MySQL 5.6.10a with max 2 writer instances and significant limitations.
-  engine_mode = "provisioned"
+  engine_mode    = "provisioned"
 
   ## NOTE: `engine_lifecycle_support` controls the extended support policy.
   ## - `open-source-rds-extended-support` (default): Extended support available.
@@ -72,10 +76,13 @@ resource "aws_rds_cluster" "this" {
   # Network
   ###################################################
 
-  db_subnet_group_name   = var.subnet_group
-  availability_zones     = var.availability_zones
-  network_type           = var.network_type
-  vpc_security_group_ids = var.vpc_security_groups
+  db_subnet_group_name = var.subnet_group
+  availability_zones   = var.availability_zones
+  network_type         = var.network_type
+  vpc_security_group_ids = (var.default_security_group.enabled
+    ? concat(module.security_group[*].id, var.security_groups)
+    : var.security_groups
+  )
 
 
   ###################################################

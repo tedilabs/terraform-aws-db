@@ -4,129 +4,38 @@ This module creates following resources.
 
 - `aws_rds_cluster`
 - `aws_rds_cluster_instance`
+- `aws_rds_cluster_endpoint` (optional)
 - `aws_rds_cluster_parameter_group` (optional)
 - `aws_db_parameter_group` (optional)
-- `aws_rds_cluster_endpoint` (optional)
-
-## Usage
-
-### Provisioned Cluster
-
-```hcl
-module "aurora_postgresql" {
-  source = "tedilabs/rds/aws//modules/aurora-postgresql-cluster"
-
-  name           = "my-aurora-pg"
-  engine_version = "16.6"
-
-  admin_username = "clusteradmin"
-  database       = "myapp"
-
-  db_subnet_group    = "my-db-subnet-group"
-  vpc_security_groups = ["sg-0123456789abcdef0"]
-
-  cluster_parameter_group = {
-    create = true
-    family = "aurora-postgresql16"
-    parameters = [
-      {
-        name  = "shared_preload_libraries"
-        value = "pg_stat_statements,pg_hint_plan"
-      },
-    ]
-  }
-
-  db_parameter_group = {
-    create = true
-    family = "aurora-postgresql16"
-    parameters = [
-      {
-        name  = "log_min_duration_statement"
-        value = "1000"
-      },
-    ]
-  }
-
-  instances = [
-    {
-      identifier     = "my-aurora-pg-1"
-      instance_class = "db.r6g.large"
-      promotion_tier = 0
-    },
-    {
-      identifier     = "my-aurora-pg-2"
-      instance_class = "db.r6g.large"
-      promotion_tier = 1
-    },
-  ]
-
-  backup_retention_period = 14
-
-  performance_insights = {
-    enabled          = true
-    retention_period = 7
-  }
-
-  monitoring = {
-    interval = 60
-    role_arn = "arn:aws:iam::123456789012:role/rds-monitoring-role"
-  }
-}
-```
-
-### Serverless v2 Cluster
-
-```hcl
-module "aurora_postgresql_serverless" {
-  source = "tedilabs/rds/aws//modules/aurora-postgresql-cluster"
-
-  name           = "my-aurora-pg-serverless"
-  engine_version = "16.6"
-
-  admin_username = "clusteradmin"
-
-  db_subnet_group    = "my-db-subnet-group"
-  vpc_security_groups = ["sg-0123456789abcdef0"]
-
-  serverless_v2_scaling = {
-    min_capacity = 0.5
-    max_capacity = 16
-  }
-
-  instances = [
-    {
-      identifier     = "my-aurora-pg-serverless-1"
-      instance_class = "db.serverless"
-    },
-  ]
-}
-```
+- `aws_security_group` (optional)
+- `aws_security_group_rule` (optional)
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.33 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.38.0 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.51.0 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | tedilabs/misc/aws//modules/resource-group | ~> 0.12.0 |
+| <a name="module_security_group"></a> [security\_group](#module\_security\_group) | tedilabs/network/aws//modules/security-group | ~> 1.0.0 |
 | <a name="module_share"></a> [share](#module\_share) | tedilabs/organization/aws//modules/ram-share | ~> 0.7.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_db_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_parameter_group) | resource |
 | [aws_rds_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster) | resource |
 | [aws_rds_cluster_endpoint.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_endpoint) | resource |
@@ -136,11 +45,12 @@ module "aurora_postgresql_serverless" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | (Required) The Aurora PostgreSQL engine version. For example, `16.6`, `15.10`, `14.15`. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The name of the Aurora PostgreSQL cluster. Used as the cluster identifier. | `string` | n/a | yes |
 | <a name="input_subnet_group"></a> [subnet\_group](#input\_subnet\_group) | (Required) The name of the DB subnet group to be used for the RDS Aurora PostgreSQL cluster. | `string` | n/a | yes |
-| <a name="input_admin_user"></a> [admin\_user](#input\_admin\_user) | (Optional) The master user configuration. `admin_user` as defined below.<br/>    (Optional) `username` - The master username for the Aurora cluster. Defaults to `postgres`.<br/>    (Optional) `password` - A configuration for the master user password. `password` as defined below.<br/>      (Optional) `mode` - The mode for managing the master user password. Valid values are `SECRETS_MANAGER`. When `SECRETS_MANAGER`, the password is stored in AWS Secrets Manager. Additional charges apply for `SECRETS_MANAGER`. Defaults to `SECRETS_MANAGER`.<br/><br/>      Managing master user passwords with Secrets Manager isn't supported for the following features:<br/>      - Amazon RDS Blue/Green Deployments<br/>      - DB clusters that are part of an Aurora global database<br/>      - Aurora Serverless v1 DB clusters<br/>      - Cross-Region read replicas<br/>      - Binary log external replication<br/><br/>      (Optional) `secrets_manager_secret` - A configuration for the AWS Secrets Manager secret to store the master user password when `mode` is `SECRETS_MANAGER`. `secrets_manager_secret` as defined below.<br/>        (Optional) `kms_key` - The ARN of the KMS key used to encrypt the master user password secret in AWS Secrets Manager. If not specified, the default KMS key for Secrets Manager is used. | <pre>object({<br/>    username = optional(string, "postgres")<br/>    password = optional(object({<br/>      mode = optional(string, "SECRETS_MANAGER")<br/>      secrets_manager_secret = optional(object({<br/>        kms_key = optional(string)<br/>      }))<br/>    }), {})<br/>  })</pre> | `{}` | no |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | (Required) The ID of the VPC in which the Aurora PostgreSQL cluster's default security group will be created. | `string` | n/a | yes |
+| <a name="input_admin_user"></a> [admin\_user](#input\_admin\_user) | (Optional) The master user configuration. `admin_user` as defined below.<br/>    (Optional) `username` - The master username for the Aurora cluster. Defaults to `postgres`.<br/>    (Optional) `password` - A configuration for the master user password. `password` as defined below.<br/>      (Optional) `mode` - The mode for managing the master user password. Valid values are `SECRETS_MANAGER`. When `SECRETS_MANAGER`, the password is stored in AWS Secrets Manager. Additional charges apply for `SECRETS_MANAGER`. Defaults to `SECRETS_MANAGER`.<br/><br/>      Managing master user passwords with Secrets Manager isn't supported for the following features:<br/>      - Amazon RDS Blue/Green Deployments<br/>      - DB clusters that are part of an Aurora global database<br/>      - Aurora Serverless v1 DB clusters<br/>      - Cross-Region read replicas<br/>      - Binary log external replication<br/><br/>      (Optional) `secrets_manager_secret` - A configuration for the AWS Secrets Manager secret to store the master user password when `mode` is `SECRETS_MANAGER`. `secrets_manager_secret` as defined below.<br/>        (Optional) `kms_key` - The ARN of the KMS key used to encrypt the master user password secret in AWS Secrets Manager. If not specified, the default KMS key for Secrets Manager is used. | <pre>object({<br/>    username = optional(string, "postgres")<br/>    password = optional(object({<br/>      mode = optional(string, "SECRETS_MANAGER")<br/>      secrets_manager_secret = optional(object({<br/>        kms_key = optional(string)<br/>      }), {})<br/>    }), {})<br/>  })</pre> | `{}` | no |
 | <a name="input_allocated_storage"></a> [allocated\_storage](#input\_allocated\_storage) | (Optional) The amount of storage in gibibytes (GiB) to allocate. Only applicable when `storage_type` is `aurora-iopt1`. | `number` | `null` | no |
 | <a name="input_allow_major_version_upgrade"></a> [allow\_major\_version\_upgrade](#input\_allow\_major\_version\_upgrade) | (Optional) Whether to allow major engine version upgrades when changing engine versions. Defaults to `false`. | `bool` | `false` | no |
 | <a name="input_auto_minor_version_upgrade"></a> [auto\_minor\_version\_upgrade](#input\_auto\_minor\_version\_upgrade) | (Optional) Whether minor engine upgrades will be applied automatically to instances during the maintenance window. Defaults to `true`. | `bool` | `true` | no |
@@ -151,6 +61,7 @@ module "aurora_postgresql_serverless" {
 | <a name="input_custom_endpoints"></a> [custom\_endpoints](#input\_custom\_endpoints) | (Optional) A list of custom endpoints for the Aurora cluster. Each item of `custom_endpoints` as defined below.<br/>    (Required) `name` - The name of the custom endpoint. Used as the custom endpoint identifier. Must be lowercase.<br/>    (Required) `type` - The type of the custom endpoint. Valid values are `READER`, `ANY`.<br/>    (Optional) `selector` - A configuration for the custom endpoint selector. `selector` as defined below.<br/>      (Optional) `mode` - The mode for selecting instances for the custom endpoint. Valid values are `STATIC`, `EXCEPT`. Defaults to `STATIC`.<br/>      (Optional) `instances` - A set of instance identifiers to be included or excluded in the custom endpoint based on the `mode`. When `mode` is `STATIC`, the instances in `instances` are included in the custom endpoint. When `mode` is `EXCEPT`, the instances in `instances` are excluded from the custom endpoint. Must have at least one instance identifier when `mode` is `STATIC`.<br/>    (Optional) `tags` - A map of tags to add to the custom endpoint. | <pre>list(object({<br/>    name = string<br/>    type = string<br/>    selector = optional(object({<br/>      mode      = optional(string, "STATIC")<br/>      instances = optional(set(string), [])<br/>    }), {})<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `[]` | no |
 | <a name="input_database"></a> [database](#input\_database) | (Optional) The name of the database to create when the cluster is created. If not specified, no database is created. | `string` | `null` | no |
 | <a name="input_db_parameter_group"></a> [db\_parameter\_group](#input\_db\_parameter\_group) | (Optional) A configuration of the DB parameter group for instances. `db_parameter_group` as defined below.<br/>    (Optional) `create` - Whether to create a new DB parameter group. Defaults to `false`.<br/>    (Optional) `name` - The name of the DB parameter group. When `create` is `true` and `name` is not provided, defaults to `${cluster_name}-instance`. When `create` is `false`, the name of an existing DB parameter group to use.<br/>    (Optional) `family` - The family of the DB parameter group. Required when `create` is `true`. For example, `aurora-postgresql16`.<br/>    (Optional) `description` - The description of the DB parameter group.<br/>    (Optional) `parameters` - A list of parameter objects to apply. Each object has `name`, `value`, and optional `apply_method` (`immediate` or `pending-reboot`). | <pre>object({<br/>    create      = optional(bool, false)<br/>    name        = optional(string)<br/>    family      = optional(string)<br/>    description = optional(string, "Managed by Terraform.")<br/>    parameters = optional(list(object({<br/>      name         = string<br/>      value        = string<br/>      apply_method = optional(string, "immediate")<br/>    })), [])<br/>  })</pre> | `{}` | no |
+| <a name="input_default_security_group"></a> [default\_security\_group](#input\_default\_security\_group) | (Optional) The configuration of the default security group for the Aurora PostgreSQL cluster. `default_security_group` as defined below.<br/>    (Optional) `enabled` - Whether to create the default security group. Defaults to `true`.<br/>    (Optional) `name` - The name of the default security group. If not provided, the cluster name is used for the name of security group.<br/>    (Optional) `description` - The description of the default security group.<br/>    (Optional) `ingress_rules` - A list of ingress rules in a security group. You don't need to specify `protocol`, `from_port`, `to_port`. They are fixed to TCP on the cluster `port`. Just specify source information. Defaults to `[]` (no ingress; callers must grant access explicitly). Each block of `ingress_rules` as defined below.<br/>      (Required) `id` - The ID of the ingress rule. This value is only used internally within Terraform code.<br/>      (Optional) `description` - The description of the rule.<br/>      (Optional) `ipv4_cidrs` - The IPv4 network ranges to allow, in CIDR notation.<br/>      (Optional) `ipv6_cidrs` - The IPv6 network ranges to allow, in CIDR notation.<br/>      (Optional) `prefix_lists` - The prefix list IDs to allow.<br/>      (Optional) `security_groups` - The source security group IDs to allow.<br/>      (Optional) `self` - Whether the security group itself will be added as a source to this ingress rule. | <pre>object({<br/>    enabled     = optional(bool, true)<br/>    name        = optional(string)<br/>    description = optional(string, "Managed by Terraform.")<br/>    ingress_rules = optional(list(object({<br/>      id              = string<br/>      description     = optional(string, "Managed by Terraform.")<br/>      ipv4_cidrs      = optional(list(string), [])<br/>      ipv6_cidrs      = optional(list(string), [])<br/>      prefix_lists    = optional(list(string), [])<br/>      security_groups = optional(list(string), [])<br/>      self            = optional(bool, false)<br/>    })), [])<br/>  })</pre> | `{}` | no |
 | <a name="input_deletion_protection_enabled"></a> [deletion\_protection\_enabled](#input\_deletion\_protection\_enabled) | (Optional) Whether deletion protection is enabled on the cluster. Defaults to `true`. | `bool` | `true` | no |
 | <a name="input_extended_support_enabled"></a> [extended\_support\_enabled](#input\_extended\_support\_enabled) | (Optional) Whether to enable RDS Extended Support for the cluster. When disabled, the cluster will be automatically upgraded to a higher engine version if the minor engine version is past the end of standard support date. Defaults to `true`. | `bool` | `true` | no |
 | <a name="input_iam_database_authentication_enabled"></a> [iam\_database\_authentication\_enabled](#input\_iam\_database\_authentication\_enabled) | (Optional) Whether to enable IAM database authentication for the cluster. Defaults to `false`. | `bool` | `false` | no |
@@ -164,18 +75,18 @@ module "aurora_postgresql_serverless" {
 | <a name="input_port"></a> [port](#input\_port) | (Optional) The port on which the DB accepts connections. Defaults to `5432`. | `number` | `5432` | no |
 | <a name="input_region"></a> [region](#input\_region) | (Optional) The region in which to create the module resources. If not provided, the module resources will be created in the provider's configured region. | `string` | `null` | no |
 | <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | (Optional) A configurations of Resource Group for this module. `resource_group` as defined below.<br/>    (Optional) `enabled` - Whether to create Resource Group to find and group AWS resources which are created by this module. Defaults to `true`.<br/>    (Optional) `name` - The name of Resource Group. A Resource Group name can have a maximum of 127 characters, including letters, numbers, hyphens, dots, and underscores. The name cannot start with `AWS` or `aws`. If not provided, a name will be generated using the module name and instance name.<br/>    (Optional) `description` - The description of Resource Group. Defaults to `Managed by Terraform.`. | <pre>object({<br/>    enabled     = optional(bool, true)<br/>    name        = optional(string, "")<br/>    description = optional(string, "Managed by Terraform.")<br/>  })</pre> | `{}` | no |
+| <a name="input_security_groups"></a> [security\_groups](#input\_security\_groups) | (Optional) A list of security group IDs to assign to the cluster. | `list(string)` | `[]` | no |
 | <a name="input_serverless_v2_scaling"></a> [serverless\_v2\_scaling](#input\_serverless\_v2\_scaling) | (Optional) A configuration for Aurora Serverless v2 scaling. Required when any instance uses `db.serverless` instance class. `serverless_v2_scaling` as defined below.<br/>    (Required) `min_capacity` - The minimum capacity for an Aurora Serverless v2 DB instance. Must be between `0` and `256` in increments of `0.5`.<br/>    (Required) `max_capacity` - The maximum capacity for an Aurora Serverless v2 DB instance. Must be between `0.5` and `256` in increments of `0.5`.<br/>    (Optional) `seconds_until_auto_pause` - The number of seconds before an Aurora Serverless v2 instance is paused. Only valid when `min_capacity` is `0`. Valid values are between `300` and `86400`. Defaults to `300`. | <pre>object({<br/>    min_capacity             = number<br/>    max_capacity             = number<br/>    seconds_until_auto_pause = optional(number, 300)<br/>  })</pre> | `null` | no |
-| <a name="input_shares"></a> [shares](#input\_shares) | (Optional) A list of resource shares via RAM (Resource Access Manager). | <pre>list(object({<br/>    name = optional(string)<br/><br/>    permissions = optional(set(string), ["AWSRAMDefaultPermissionRDSCluster"])<br/><br/>    external_principals_allowed = optional(bool, false)<br/>    principals                  = optional(set(string), [])<br/><br/>    tags = optional(map(string), {})<br/>  }))</pre> | `[]` | no |
+| <a name="input_shares"></a> [shares](#input\_shares) | (Optional) A list of resource shares via RAM (Resource Access Manager). | <pre>list(object({<br/>    name = string<br/><br/>    permissions = optional(set(string), ["AWSRAMDefaultPermissionRDSCluster"])<br/><br/>    external_principals_allowed = optional(bool, false)<br/>    principals                  = optional(set(string), [])<br/><br/>    tags = optional(map(string), {})<br/>  }))</pre> | `[]` | no |
 | <a name="input_storage_encryption_kms_key"></a> [storage\_encryption\_kms\_key](#input\_storage\_encryption\_kms\_key) | (Optional) The ARN of the KMS key used to encrypt the cluster storage. If not specified, the default RDS KMS key is used. | `string` | `null` | no |
 | <a name="input_storage_type"></a> [storage\_type](#input\_storage\_type) | (Optional) The storage type for the Aurora cluster. Valid values are `aurora` (standard) and `aurora-iopt1` (I/O Optimized). Defaults to `aurora`. | `string` | `"aurora"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | (Optional) A map of tags to add to all resources. | `map(string)` | `{}` | no |
 | <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | (Optional) How long to wait for the cluster to be created/updated/deleted. | <pre>object({<br/>    create = optional(string, "120m")<br/>    update = optional(string, "120m")<br/>    delete = optional(string, "120m")<br/>  })</pre> | `{}` | no |
-| <a name="input_vpc_security_groups"></a> [vpc\_security\_groups](#input\_vpc\_security\_groups) | (Optional) A list of VPC security group IDs to associate with the cluster. | `list(string)` | `[]` | no |
 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_admin_user"></a> [admin\_user](#output\_admin\_user) | The master user configuration of the cluster. |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the Aurora PostgreSQL cluster. |
 | <a name="output_backup"></a> [backup](#output\_backup) | The backup configuration of the RDS Aurora cluster.<br/>    `window` - The daily time range during which automated backups are created if automated backups are enabled.<br/>    `retention` - The number of days for which automated backups are retained.<br/>    `copy_tags_to_snapshot` - Whether to copy tags to snapshots.<br/>    `final_snapshot` - The configuration for the final snapshot when the cluster is deleted. |
@@ -185,13 +96,13 @@ module "aurora_postgresql_serverless" {
 | <a name="output_debug"></a> [debug](#output\_debug) | n/a |
 | <a name="output_deletion_protection_enabled"></a> [deletion\_protection\_enabled](#output\_deletion\_protection\_enabled) | Whether deletion protection is enabled. |
 | <a name="output_endpoints"></a> [endpoints](#output\_endpoints) | The endpoint configuration of the cluster.<br/>    `writer` - The cluster writer endpoint.<br/>    `reader` - The cluster reader endpoint.<br/>    `custom` - A map of custom endpoints keyed by identifier. |
-| <a name="output_engine"></a> [engine](#output\_engine) | The engine configuration of the cluster.<br/>    `type` - The engine type. Always `aurora-postgresql`.<br/>    `mode` - The engine mode of the cluster.<br/>    `version` - The running engine version.<br/>    `version_actual` - The running engine version (identical to `version`).<br/>    # `extended_support_enabled` - Whether RDS Extended Support is enabled. |
+| <a name="output_engine"></a> [engine](#output\_engine) | The engine configuration of the cluster.<br/>    `type` - The engine type. Always `aurora-postgresql`.<br/>    `mode` - The engine mode of the cluster.<br/>    `version` - The running engine version.<br/>    `version_actual` - The running engine version (identical to `version`).<br/>    `extended_support_enabled` - Whether RDS Extended Support is enabled. |
 | <a name="output_iam_database_authentication_enabled"></a> [iam\_database\_authentication\_enabled](#output\_iam\_database\_authentication\_enabled) | Whether IAM database authentication is enabled. |
 | <a name="output_id"></a> [id](#output\_id) | The ID of the Aurora PostgreSQL cluster. |
 | <a name="output_instances"></a> [instances](#output\_instances) | A map of Aurora cluster instances keyed by identifier.<br/>    `id` - The ID of the instance.<br/>    `arn` - The ARN of the instance.<br/>    `identifier` - The identifier of the instance.<br/>    `instance_class` - The instance class.<br/>    `availability_zone` - The Availability Zone of the instance.<br/>    `endpoint` - The DNS address for the instance.<br/>    `port` - The database port.<br/>    `writer` - Whether the instance is the primary writer.<br/>    `promotion_tier` - The failover priority. |
 | <a name="output_maintenance"></a> [maintenance](#output\_maintenance) | The configuration for maintenance of the RDS Aurora cluster.<br/>    `window` - The weekly time range for when maintenance on the RDS Aurora cluster is performed. |
 | <a name="output_name"></a> [name](#output\_name) | The name of the Aurora PostgreSQL cluster. |
-| <a name="output_network"></a> [network](#output\_network) | The network configuration of the cluster.<br/>    `db_subnet_group` - The name of the DB subnet group.<br/>    `network_type` - The network type of the cluster.<br/>    `vpc_security_groups` - The list of VPC security group IDs associated with the cluster.<br/>    `hosted_zone_id` - The Route53 hosted zone ID of the cluster endpoint. |
+| <a name="output_network"></a> [network](#output\_network) | The network configuration of the cluster.<br/>    `db_subnet_group` - The name of the DB subnet group.<br/>    `network_type` - The network type of the cluster.<br/>    `vpc_id` - The ID of the VPC in which the cluster's default security group is created.<br/>    `default_security_group` - The ID of the default security group created by this module. `null` if not created.<br/>    `security_groups` - The list of VPC security group IDs associated with the cluster.<br/>    `hosted_zone_id` - The Route53 hosted zone ID of the cluster endpoint. |
 | <a name="output_region"></a> [region](#output\_region) | The AWS region this module resources resides in. |
 | <a name="output_resource_group"></a> [resource\_group](#output\_resource\_group) | The resource group created to manage resources in this module. |
 | <a name="output_sharing"></a> [sharing](#output\_sharing) | The configuration for sharing of the RDS Aurora cluster.<br/>    `status` - An indication of whether the RDS Aurora cluster is shared with other AWS accounts, or was shared with the current account by another AWS account. Sharing is configured through AWS Resource Access Manager (AWS RAM). Values are `NOT_SHARED`, `SHARED_BY_ME` or `SHARED_WITH_ME`.<br/>    `shares` - The list of resource shares via RAM (Resource Access Manager). |

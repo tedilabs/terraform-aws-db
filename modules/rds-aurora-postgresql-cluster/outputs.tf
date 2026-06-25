@@ -25,14 +25,14 @@ output "engine" {
     `mode` - The engine mode of the cluster.
     `version` - The running engine version.
     `version_actual` - The running engine version (identical to `version`).
-    # `extended_support_enabled` - Whether RDS Extended Support is enabled.
+    `extended_support_enabled` - Whether RDS Extended Support is enabled.
   EOF
   value = {
-    type           = aws_rds_cluster.this.engine
-    mode           = aws_rds_cluster.this.engine_mode
-    version        = aws_rds_cluster.this.engine_version
-    version_actual = aws_rds_cluster.this.engine_version_actual
-    # extended_support_enabled = var.extended_support_enabled
+    type                     = aws_rds_cluster.this.engine
+    mode                     = aws_rds_cluster.this.engine_mode
+    version                  = aws_rds_cluster.this.engine_version
+    version_actual           = aws_rds_cluster.this.engine_version_actual
+    extended_support_enabled = aws_rds_cluster.this.engine_lifecycle_support == "open-source-rds-extended-support"
   }
 }
 
@@ -55,19 +55,15 @@ output "admin_user" {
   value = {
     username = aws_rds_cluster.this.master_username
     password = {
-      mode = (aws_rds_cluster.this.manage_master_user_password
-        ? "SECRETS_MANAGER"
-        : "TO_BE_CONTINUE"
-      )
-      secrets_manager_secret = (aws_rds_cluster.this.manage_master_user_password
-        ? {
-          arn     = aws_rds_cluster.this.master_user_secret[0].secret_arn
-          name    = trimprefix(provider::aws::arn_parse(aws_rds_cluster.this.master_user_secret[0].secret_arn).resource, "secret:")
-          status  = upper(aws_rds_cluster.this.master_user_secret[0].secret_status)
-          kms_key = aws_rds_cluster.this.master_user_secret[0].kms_key_id
-        }
-        : null
-      )
+      # INFO: Only `SECRETS_MANAGER` is supported today; the variable validation guarantees it,
+      # so `master_user_secret[0]` is always populated.
+      mode = "SECRETS_MANAGER"
+      secrets_manager_secret = {
+        arn     = aws_rds_cluster.this.master_user_secret[0].secret_arn
+        name    = trimprefix(provider::aws::arn_parse(aws_rds_cluster.this.master_user_secret[0].secret_arn).resource, "secret:")
+        status  = upper(aws_rds_cluster.this.master_user_secret[0].secret_status)
+        kms_key = aws_rds_cluster.this.master_user_secret[0].kms_key_id
+      }
     }
   }
 }
@@ -106,14 +102,18 @@ output "network" {
   The network configuration of the cluster.
     `db_subnet_group` - The name of the DB subnet group.
     `network_type` - The network type of the cluster.
-    `vpc_security_groups` - The list of VPC security group IDs associated with the cluster.
+    `vpc_id` - The ID of the VPC in which the cluster's default security group is created.
+    `default_security_group` - The ID of the default security group created by this module. `null` if not created.
+    `security_groups` - The list of VPC security group IDs associated with the cluster.
     `hosted_zone_id` - The Route53 hosted zone ID of the cluster endpoint.
   EOF
   value = {
-    db_subnet_group     = aws_rds_cluster.this.db_subnet_group_name
-    network_type        = aws_rds_cluster.this.network_type
-    vpc_security_groups = aws_rds_cluster.this.vpc_security_group_ids
-    hosted_zone_id      = aws_rds_cluster.this.hosted_zone_id
+    db_subnet_group        = aws_rds_cluster.this.db_subnet_group_name
+    network_type           = aws_rds_cluster.this.network_type
+    vpc_id                 = var.vpc_id
+    default_security_group = one(module.security_group[*].id)
+    security_groups        = aws_rds_cluster.this.vpc_security_group_ids
+    hosted_zone_id         = aws_rds_cluster.this.hosted_zone_id
   }
 }
 
