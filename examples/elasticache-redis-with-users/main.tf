@@ -89,7 +89,7 @@ module "user_group" {
   engine = "redis"
 
   name  = "example"
-  users = [module.user["example-admin"].id]
+  users = [module.user["admin"].id]
 
   tags = {
     "project" = "terraform-aws-db-examples"

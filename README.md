@@ -34,30 +34,36 @@ module "cluster" {
   name        = "example-redis-full"
   description = "Managed by Terraform."
 
-  redis_version      = "6.2"
+  engine = {
+    type    = "redis"
+    version = "7.1"
+  }
   node_instance_type = "cache.t4g.micro"
   # node_size          = 1
-  sharding = {
-    enabled    = true
+  cluster_mode = {
+    state      = "ENABLED"
     shard_size = 3
     replicas   = 2
   }
 
 
   ## Network
+  ip_address_type              = "IPv4"
+  discovery_ip_address_type    = "IPv4"
   port                         = 6379
-  vpc_id                       = null
-  subnet_group                 = null
+  vpc_id                       = "vpc-0123456789abcdef0"
+  subnet_group                 = "example-redis-subnet-group"
   preferred_availability_zones = []
 
   default_security_group = {
-    eanbled     = true
+    enabled     = true
     name        = "example-redis-full-default-sg"
     description = "Managed by Terraform."
 
     ingress_rules = [
       {
-        cidr_blocks = ["0.0.0.0/0"]
+        id         = "all"
+        ipv4_cidrs = ["0.0.0.0/0"]
       }
     ]
   }
@@ -65,7 +71,7 @@ module "cluster" {
 
 
   ## Parameters
-  parameter_group = {
+  default_parameter_group = {
     enabled     = true
     name        = "example-redis-full-parameter-group"
     description = "Managed by Terraform."
@@ -76,12 +82,13 @@ module "cluster" {
       "rename-commands"          = "KEYS BLOCKED"
     }
   }
-  custom_parameter_group = null
+  parameter_group = null
 
 
   ## Auth
-  password    = sensitive("helloworld!#!!1234")
-  user_groups = []
+  password                 = sensitive("helloworld!#!!1234")
+  password_update_strategy = "ROTATE"
+  user_groups              = []
 
 
   ## Encryption
@@ -91,25 +98,32 @@ module "cluster" {
   }
   encryption_in_transit = {
     enabled = true
+    mode    = "required"
   }
 
 
   ## Backup
-  backup_enabled             = true
-  backup_window              = "16:00-17:00"
-  backup_retention           = 1
-  backup_final_snapshot_name = "example-redis-full-final"
+  backup = {
+    enabled             = true
+    window              = "16:00-17:00"
+    retention           = 1
+    final_snapshot_name = "example-redis-full-final"
+  }
 
 
-  ## Source
-  source_backup_name = null
-  source_rdb_s3_arns = null
+  ## Restore
+  restore = {
+    backup_name = null
+    rdb_s3_arns = null
+  }
 
 
   ## Maintenance
-  maintenance_window                 = "fri:18:00-fri:20:00"
-  auto_upgrade_minor_version_enabled = true
-  notification_sns_topic             = null
+  maintenance = {
+    window                             = "fri:18:00-fri:20:00"
+    auto_upgrade_minor_version_enabled = true
+    notification_sns_topic             = null
+  }
 
 
   ## Logging
@@ -117,15 +131,19 @@ module "cluster" {
     enabled = false
     format  = "JSON"
 
-    destination_type = "CLOUDWATCH_LOGS"
-    destination      = null
+    destination = {
+      type = "CLOUDWATCH_LOGS"
+      name = null
+    }
   }
   logging_engine_log = {
     enabled = false
     format  = "JSON"
 
-    destination_type = "CLOUDWATCH_LOGS"
-    destination      = null
+    destination = {
+      type = "CLOUDWATCH_LOGS"
+      name = null
+    }
   }
 
 

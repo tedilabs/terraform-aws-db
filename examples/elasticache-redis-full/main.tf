@@ -76,7 +76,7 @@ module "cluster" {
   preferred_availability_zones = []
 
   default_security_group = {
-    eanbled     = true
+    enabled     = true
     name        = "example-redis-full-default-sg"
     description = "Managed by Terraform."
 
@@ -151,15 +151,19 @@ module "cluster" {
     enabled = false
     format  = "JSON"
 
-    destination_type = "CLOUDWATCH_LOGS"
-    destination      = null
+    destination = {
+      type = "CLOUDWATCH_LOGS"
+      name = null
+    }
   }
   logging_engine_log = {
     enabled = false
     format  = "JSON"
 
-    destination_type = "CLOUDWATCH_LOGS"
-    destination      = null
+    destination = {
+      type = "CLOUDWATCH_LOGS"
+      name = null
+    }
   }
 
 
