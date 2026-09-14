@@ -9,33 +9,33 @@ This module creates following resources.
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.33 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.33.0 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.33 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | tedilabs/misc/aws//modules/resource-group | ~> 0.12.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_elasticache_user_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_user_group) | resource |
 | [aws_elasticache_user_group_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_user_group_association) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The name of the ElastiCache user group. It can have up to 40 characters, and must begin with a letter. It should not end with a hyphen or contain two consecutive hyphens. Valid characters: A-Z, a-z, 0-9, and - (hyphen). | `string` | n/a | yes |
 | <a name="input_engine"></a> [engine](#input\_engine) | (Optional) The cache engine for the ElastiCache user group. Valid values are `redis` and `valkey`. Defaults to `valkey`. | `string` | `"valkey"` | no |
 | <a name="input_module_tags_enabled"></a> [module\_tags\_enabled](#input\_module\_tags\_enabled) | (Optional) Whether to create AWS Resource Tags for the module informations. | `bool` | `true` | no |
@@ -47,7 +47,7 @@ This module creates following resources.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the ElastiCache user group. |
 | <a name="output_engine"></a> [engine](#output\_engine) | The cache engine used by the ElastiCache user group. |
 | <a name="output_id"></a> [id](#output\_id) | The ID of the ElastiCache user group. |
