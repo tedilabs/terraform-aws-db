@@ -12,27 +12,27 @@ This module creates following resources.
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.33 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.33.0 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.33 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | tedilabs/misc/aws//modules/resource-group | ~> 0.12.0 |
 | <a name="module_security_group"></a> [security\_group](#module\_security\_group) | tedilabs/network/aws//modules/security-group | ~> 1.2.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_elasticache_global_replication_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_global_replication_group) | resource |
 | [aws_elasticache_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_parameter_group) | resource |
 | [aws_elasticache_replication_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_replication_group) | resource |
@@ -40,7 +40,7 @@ This module creates following resources.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_engine"></a> [engine](#input\_engine) | (Required) A configuration for the cache engine of the ElastiCache Redis cluster. `engine` as defined below.<br/>    (Required) `type` - A name of the cache engine to be used for the clusters in this replication group. Valid values are `redis` or `valkey`.<br/>    (Required) `version` - The version number of Redis used for the ElastiCache Redis cluster. | <pre>object({<br/>    type    = string<br/>    version = string<br/>  })</pre> | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The name of the ElastiCache Redis cluster. The name is stored as a lowercase string. | `string` | n/a | yes |
 | <a name="input_node_instance_type"></a> [node\_instance\_type](#input\_node\_instance\_type) | (Required) The instance type to be deployed for the ElastiCache Redis cluster. | `string` | n/a | yes |
@@ -80,7 +80,7 @@ This module creates following resources.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the ElastiCache Redis cluster. |
 | <a name="output_attributes"></a> [attributes](#output\_attributes) | A set of attributes that applied to the ElastiCache Redis cluster. |
 | <a name="output_auth"></a> [auth](#output\_auth) | The configuration for auth of the ElastiCache Redis cluster.<br/>    `user_groups` - A set of User Group IDs to associate with the ElastiCache Redis cluster. |

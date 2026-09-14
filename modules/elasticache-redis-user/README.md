@@ -8,32 +8,32 @@ This module creates following resources.
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.33 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.33.0 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.33 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | tedilabs/misc/aws//modules/resource-group | ~> 0.12.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_elasticache_user.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_user) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The username of the ElastiCache user. It can have up to 40 characters, and must begin with a letter. It should not end with a hyphen or contain two consecutive hyphens. Valid characters: A-Z, a-z, 0-9, and - (hyphen). | `string` | n/a | yes |
 | <a name="input_access_string"></a> [access\_string](#input\_access\_string) | (Optional) Access permissions string used for this user. Defaults to `off -@all`. | `string` | `"off -@all"` | no |
 | <a name="input_authentication"></a> [authentication](#input\_authentication) | (Optional) A configuration of authentication for this user. `authentication` as defined below.<br/>    (Optional) `mode` - The authentication mode. Valid values are `iam`, `no-password-required`, and `password`. Defaults to `no-password`.<br/>    (Optional) `passwords` - A set of passwords used for this user. You can create up to two passwords for each user. Required if `mode` is set to `password`. | <pre>object({<br/>    mode      = optional(string, "no-password-required")<br/>    passwords = optional(set(string), [])<br/>  })</pre> | `{}` | no |
@@ -46,7 +46,7 @@ This module creates following resources.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_access_string"></a> [access\_string](#output\_access\_string) | Access permissions string used for this user. |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the ElastiCache user. |
 | <a name="output_authentication"></a> [authentication](#output\_authentication) | The authentication configuration for this user. |
