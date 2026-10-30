@@ -2,6 +2,11 @@
 # Security Group
 ###################################################
 
+data "aws_elasticache_subnet_group" "this" {
+  region = var.region
+  name   = var.subnet_group
+}
+
 module "security_group" {
   source  = "tedilabs/network/aws//modules/security-group"
   version = "~> 1.3.0"
