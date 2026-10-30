@@ -43,7 +43,7 @@ module "subnet_group" {
 
 
 ###################################################
-# ElastiCache Redis Cluster
+# ElastiCache Valkey Cluster
 ###################################################
 
 module "cluster" {
@@ -51,12 +51,12 @@ module "cluster" {
   # source  = "tedilabs/db/aws//modules/elasticache-redis-cluster"
   # version = "~> 0.4.0"
 
-  name        = "example-redis-single"
+  name        = "example-valkey-rbac"
   description = "Managed by Terraform."
 
   engine = {
-    type    = "redis"
-    version = "7.1"
+    type    = "valkey"
+    version = "8.2"
   }
   node_instance_type = "cache.t4g.micro"
   node_size          = 1
@@ -77,7 +77,7 @@ module "cluster" {
 
 
 ###################################################
-# Redis User Groups on ElastiCache
+# Valkey User Groups on ElastiCache
 ###################################################
 
 module "user_group" {
@@ -85,10 +85,10 @@ module "user_group" {
   # source  = "tedilabs/db/aws//modules/elasticache-redis-user-group"
   # version = "~> 0.4.0"
 
-  engine = "redis"
+  engine = "valkey"
 
-  name  = "example"
-  users = [module.user["admin"].id]
+  name  = "example-valkey-rbac"
+  users = [for user in module.user : user.id]
 
   tags = {
     "project" = "terraform-aws-db-examples"
@@ -97,46 +97,36 @@ module "user_group" {
 
 
 ###################################################
-# Redis Users on ElastiCache
+# Valkey Users on ElastiCache
 ###################################################
 
 locals {
-  users = [
-    {
-      name = "default"
-
+  users = {
+    admin = {
+      access_string = "on ~* &* +@all"
+    }
+    readonly = {
       access_string = "on ~* -@all +@read"
-      authentication = {
-        mode = "no-password-required"
-      }
-    },
-    {
-      name = "admin"
-
-      access_string = "on ~* +@all"
-      authentication = {
-        mode      = "password"
-        passwords = ["MyPassWord!Q@W#E", "MyPassW0rd!@QW#$ER"]
-      }
-    },
-  ]
+    }
+  }
 }
+
 
 module "user" {
   source = "../../modules/elasticache-redis-user"
   # source  = "tedilabs/db/aws//modules/elasticache-redis-user"
   # version = "~> 0.4.0"
 
-  for_each = {
-    for user in try(local.users, []) :
-    user.name => user
+  for_each = local.users
+
+  engine = "valkey"
+  name   = "example-rbac-${each.key}"
+
+  access_string = each.value.access_string
+  authentication = {
+    mode      = "password"
+    passwords = [var.user_passwords[each.key]]
   }
-
-  engine = "redis"
-  name   = each.value.name
-
-  access_string  = try(each.value.access_string, null)
-  authentication = try(each.value.authentication, null)
 
   tags = {
     "project" = "terraform-aws-db-examples"
