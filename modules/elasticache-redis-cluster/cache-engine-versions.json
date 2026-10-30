@@ -1,11 +1,6 @@
 [
   {
     "engine": "memcached",
-    "engine_version": "1.4.14",
-    "parameter_group_family": "memcached1.4"
-  },
-  {
-    "engine": "memcached",
     "engine_version": "1.4.24",
     "parameter_group_family": "memcached1.4"
   },
@@ -17,11 +12,6 @@
   {
     "engine": "memcached",
     "engine_version": "1.4.34",
-    "parameter_group_family": "memcached1.4"
-  },
-  {
-    "engine": "memcached",
-    "engine_version": "1.4.5",
     "parameter_group_family": "memcached1.4"
   },
   {
@@ -103,5 +93,15 @@
     "engine": "valkey",
     "engine_version": "8.2",
     "parameter_group_family": "valkey8"
+  },
+  {
+    "engine": "valkey",
+    "engine_version": "9.0",
+    "parameter_group_family": "valkey9"
+  },
+  {
+    "engine": "valkey",
+    "engine_version": "9.1",
+    "parameter_group_family": "valkey9"
   }
 ]
