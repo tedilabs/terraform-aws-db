@@ -4,6 +4,10 @@ This module creates following resources.
 
 - `aws_elasticache_user`
 
+Authentication defaults to IAM for both Valkey and Redis. IAM authentication requires a supported engine version (Valkey 7.2+ or Redis 7.0+), TLS on the cache, user group membership, and `elasticache:Connect` permissions for the client. The client must generate an IAM authentication token to connect.
+
+When upgrading an existing user, explicitly set `authentication.mode` if you want to retain its current authentication method. Redis users can explicitly select `no-password-required`; Valkey users must use `iam` or `password`.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -37,7 +41,7 @@ This module creates following resources.
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_name"></a> [name](#input\_name) | (Required) The username of the ElastiCache user. It can have up to 40 characters, and must begin with a letter. It should not end with a hyphen or contain two consecutive hyphens. Valid characters: A-Z, a-z, 0-9, and - (hyphen). | `string` | n/a | yes |
 | <a name="input_access_string"></a> [access\_string](#input\_access\_string) | (Optional) Access permissions string used for this user. Defaults to `off -@all`. | `string` | `"off -@all"` | no |
-| <a name="input_authentication"></a> [authentication](#input\_authentication) | (Optional) A configuration of authentication for this user. `authentication` as defined below.<br/>    (Optional) `mode` - The authentication mode. Valid values are `iam`, `no-password-required`, and `password`. Defaults to `no-password-required`.<br/>    (Optional) `passwords` - A set of passwords used for this user. You can create up to two passwords for each user. Required if `mode` is set to `password`. | <pre>object({<br/>    mode      = optional(string, "no-password-required")<br/>    passwords = optional(set(string), [])<br/>  })</pre> | `{}` | no |
+| <a name="input_authentication"></a> [authentication](#input\_authentication) | (Optional) A configuration of authentication for this user. `authentication` as defined below.<br/>    (Optional) `mode` - The authentication mode. Valid values are `iam`, `no-password-required`, and `password`. Defaults to `iam`.<br/>    (Optional) `passwords` - A set of passwords used for this user. You can create up to two passwords for each user. Required if `mode` is set to `password`. | <pre>object({<br/>    mode      = optional(string, "iam")<br/>    passwords = optional(set(string), [])<br/>  })</pre> | `{}` | no |
 | <a name="input_engine"></a> [engine](#input\_engine) | (Optional) The cache engine for the ElastiCache user. Valid values are `redis` and `valkey`. Defaults to `valkey`. | `string` | `"valkey"` | no |
 | <a name="input_module_tags_enabled"></a> [module\_tags\_enabled](#input\_module\_tags\_enabled) | (Optional) Whether to create AWS Resource Tags for the module informations. | `bool` | `true` | no |
 | <a name="input_region"></a> [region](#input\_region) | (Optional) The region in which to create the module resources. If not provided, the module resources will be created in the provider's configured region. | `string` | `null` | no |
