@@ -49,7 +49,7 @@ module "subnet_group" {
 module "cluster" {
   source = "../../modules/elasticache-redis-cluster"
   # source  = "tedilabs/db/aws//modules/elasticache-redis-cluster"
-  # version = "~> 0.2.0"
+  # version = "~> 0.4.0"
 
   name        = "example-redis-single"
   description = "Managed by Terraform."
@@ -83,7 +83,7 @@ module "cluster" {
 module "user_group" {
   source = "../../modules/elasticache-redis-user-group"
   # source  = "tedilabs/db/aws//modules/elasticache-redis-user-group"
-  # version = "~> 0.2.0"
+  # version = "~> 0.4.0"
 
   engine = "redis"
 
@@ -125,7 +125,7 @@ locals {
 module "user" {
   source = "../../modules/elasticache-redis-user"
   # source  = "tedilabs/db/aws//modules/elasticache-redis-user"
-  # version = "~> 0.2.0"
+  # version = "~> 0.4.0"
 
   for_each = {
     for user in try(local.users, []) :

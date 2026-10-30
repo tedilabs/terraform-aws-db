@@ -49,7 +49,7 @@ module "subnet_group" {
 module "cluster" {
   source = "../../modules/elasticache-redis-cluster"
   # source  = "tedilabs/db/aws//modules/elasticache-redis-cluster"
-  # version = "~> 0.2.0"
+  # version = "~> 0.4.0"
 
   name        = "example-redis-multi-az"
   description = "Managed by Terraform."
