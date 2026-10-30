@@ -46,6 +46,7 @@ resource "aws_elasticache_replication_group" "this" {
   ## Engine
   engine         = var.engine.type
   engine_version = var.engine.version
+  durability     = var.durability
 
 
   ## Nodes

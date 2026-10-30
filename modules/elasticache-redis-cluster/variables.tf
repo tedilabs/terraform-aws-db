@@ -36,6 +36,35 @@ variable "engine" {
   }
 }
 
+variable "durability" {
+  description = "(Optional) The durability setting for the replication group. Valid values are `default`, `async`, `sync`, and `disabled`. If omitted, the provider and AWS determine the setting. Enabling durability with `async` or `sync` requires Valkey 9.0 or later, cluster mode enabled, Multi-AZ, automatic failover, and at least one replica per shard. Global Datastores are not supported. AWS also restricts supported node types and placement. Changing this argument forces replacement with the current AWS provider."
+  type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition     = var.durability == null ? true : contains(["default", "async", "sync", "disabled"], var.durability)
+    error_message = "Valid values for `durability` are `default`, `async`, `sync`, or `disabled`."
+  }
+  validation {
+    condition = var.durability == null ? true : (
+      !contains(["async", "sync"], var.durability) || (
+        var.engine.type == "valkey" &&
+        try(tonumber(split(".", var.engine.version)[0]) >= 9, false) &&
+        var.cluster_mode.state == "ENABLED" &&
+        var.multi_az_enabled &&
+        var.auto_failover_enabled &&
+        !var.global_datastore.enabled &&
+        (length(var.cluster_mode.shard_configurations) > 0
+          ? alltrue([for shard in var.cluster_mode.shard_configurations : coalesce(shard.replicas, var.cluster_mode.replicas) >= 1])
+          : var.cluster_mode.replicas >= 1
+        )
+      )
+    )
+    error_message = "Durability modes `async` and `sync` require Valkey 9.0 or later, cluster mode `ENABLED`, Multi-AZ, automatic failover, at least one replica per shard, and no Global Datastore."
+  }
+}
+
 # INFO: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/CacheNodes.SupportedTypes.html
 variable "node_instance_type" {
   description = "(Required) The instance type to be deployed for the ElastiCache Redis cluster."

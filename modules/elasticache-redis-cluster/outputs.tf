@@ -32,6 +32,11 @@ output "engine" {
   }
 }
 
+output "durability" {
+  description = "The durability setting reported by the ElastiCache replication group."
+  value       = aws_elasticache_replication_group.this.durability
+}
+
 output "description" {
   description = "The description of the ElastiCache Redis cluster."
   value       = aws_elasticache_replication_group.this.description
