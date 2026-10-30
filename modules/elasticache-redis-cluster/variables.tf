@@ -60,10 +60,10 @@ variable "node_size" {
 variable "cluster_mode" {
   description = <<EOF
   The configuration for cluster mode of the ElastiCache Redis cluster.
-    (Optional) `state` - The state of cluster mode. Valid values are `ENABLED`, `DISABLED`, or `COMPATIABLE`. It enables replication across multiple shards for enhanced scalability and availability. Defaults to `DISABLED`.
+    (Optional) `state` - The state of cluster mode. Valid values are `ENABLED`, `DISABLED`, or `COMPATIBLE`. It enables replication across multiple shards for enhanced scalability and availability. Defaults to `DISABLED`.
      - `ENABLED` - Cluster mode enabled with multiple shards and replicas.
      - `DISABLED` - Cluster mode disabled with a single shard and optional replicas.
-     - `COMPATIABLE` - Cluster mode enabled with a single shard and optional replicas. This mode allows for easier migration to cluster mode in the future by enabling cluster mode features while maintaining a single shard configuration.
+     - `COMPATIBLE` - Cluster mode enabled with a single shard and optional replicas. This mode allows for easier migration to cluster mode in the future by enabling cluster mode features while maintaining a single shard configuration.
     (Optional) `shard_size` - The number of shards in this cluster. Changing this number will trigger a resizing operation before other settings modifications. Valid value is from `1` to `500`. Defaults to `3`.
     (Optional) `replicas` - The number of replicas for each shard. Changing this number will trigger a resizing operation before other settings modifications. Must be greater than or equal to `0`. The default AWS limit is `5`; higher values require a quota increase. Defaults to `2`.
     (Optional) `shard_configurations` - A configurations for shard customization. Can be specified only if `shard_size` is set. Each block of `shard_configurations` as defined below.
@@ -94,8 +94,8 @@ variable "cluster_mode" {
   nullable = false
 
   validation {
-    condition     = contains(["ENABLED", "DISABLED", "COMPATIABLE"], var.cluster_mode.state)
-    error_message = "Valid values for `state` are `ENABLED`, `DISABLED`, or `COMPATIABLE`."
+    condition     = contains(["ENABLED", "DISABLED", "COMPATIBLE"], var.cluster_mode.state)
+    error_message = "Valid values for `state` are `ENABLED`, `DISABLED`, or `COMPATIBLE`."
   }
   validation {
     condition = alltrue([
