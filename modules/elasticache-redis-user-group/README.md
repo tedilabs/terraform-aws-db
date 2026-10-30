@@ -5,6 +5,8 @@ This module creates following resources.
 - `aws_elasticache_user_group`
 - `aws_elasticache_user_group_association` (optional)
 
+The `id`, `arn`, and `name` outputs wait for the configured user associations to complete. Pass `module.user_group.id` to a cache module to ensure its user group membership is ready before the cache is created or updated.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

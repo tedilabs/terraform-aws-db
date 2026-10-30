@@ -6,11 +6,15 @@ output "region" {
 output "id" {
   description = "The ID of the ElastiCache user group."
   value       = aws_elasticache_user_group.this.id
+
+  depends_on = [aws_elasticache_user_group_association.this]
 }
 
 output "arn" {
   description = "The ARN of the ElastiCache user group."
   value       = aws_elasticache_user_group.this.arn
+
+  depends_on = [aws_elasticache_user_group_association.this]
 }
 
 output "engine" {
@@ -21,6 +25,8 @@ output "engine" {
 output "name" {
   description = "The name of the ElastiCache user group."
   value       = aws_elasticache_user_group.this.user_group_id
+
+  depends_on = [aws_elasticache_user_group_association.this]
 }
 
 output "users" {
