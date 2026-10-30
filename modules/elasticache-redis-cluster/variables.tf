@@ -220,6 +220,7 @@ variable "default_parameter_group" {
 
     (Optional) `enabled` - Whether to enable managed parameter group by this module.
     (Optional) `name` - The name of the managed parameter group. If not provided, the name is configured with the cluster name.
+    (Optional) `family` - The parameter group family. If omitted, the family is inferred from the bundled engine-version mapping. Specify this for engine versions not yet included in the mapping. Ignored when `enabled` is `false`.
     (Optional) `description` - The description of the managed parameter group. Defaults to `Managed by Terraform.`.
     (Optional) `parameters` - The key/value set for Redis parameters of ElastiCache Redis cluster. Each key is the name of the redis parameter. Each value is the value of the redis parameter.
     (Optional) `tags` - A map of tags to add to the parameter group.
@@ -227,6 +228,7 @@ variable "default_parameter_group" {
   type = object({
     enabled     = optional(bool, true)
     name        = optional(string, "")
+    family      = optional(string)
     description = optional(string, "Managed by Terraform.")
     parameters  = optional(map(string), {})
     tags        = optional(map(string), {})

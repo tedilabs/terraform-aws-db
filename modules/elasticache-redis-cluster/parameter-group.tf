@@ -1,9 +1,11 @@
 locals {
   engine_versions = jsondecode(file("${path.module}/cache-engine-versions.json"))
-  family = {
-    for item in local.engine_versions :
-    "${item.engine}/${item.engine_version}" => item.parameter_group_family
-  }["${var.engine.type}/${var.engine.version}"]
+  family = !var.default_parameter_group.enabled ? null : (
+    var.default_parameter_group.family != null ? var.default_parameter_group.family : {
+      for item in local.engine_versions :
+      "${item.engine}/${item.engine_version}" => item.parameter_group_family
+    }["${var.engine.type}/${var.engine.version}"]
+  )
 
   parameters = merge(
     {
@@ -12,7 +14,7 @@ locals {
     var.default_parameter_group.parameters
   )
 
-  parameter_group_default_name = "${var.name}-${replace(local.family, ".", "-")}"
+  parameter_group_default_name = local.family != null ? "${var.name}-${replace(local.family, ".", "-")}" : null
 }
 
 
