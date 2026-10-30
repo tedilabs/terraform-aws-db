@@ -175,7 +175,7 @@ module "cluster" {
 - [Single Redis Instance](./examples/elasticache-redis-single)
 - [Multi-AZs Redis Cluster (Sharding Disabled)](./examples/elasticache-redis-muti-az)
 - [Full Redis Cluster (Sharding Enabled)](./examples/elasticache-redis-full)
-- [Valkey Cluster with RBAC(Role Based Access Control)](./examples/elasticache-redis-with-users)
+- [Valkey Cluster with RBAC(Role Based Access Control)](./examples/elasticache-valkey-with-users)
 
 
 ## Self Promotion
