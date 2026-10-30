@@ -26,10 +26,12 @@ Terraform Modules from [this package](https://github.com/tedilabs/terraform-aws-
 
 ### ElastiCache Redis
 
+This example uses an existing ElastiCache subnet group in the configured AWS region. The module derives its VPC ID from the subnet group, so `vpc_id` is no longer an input. Terraform credentials need `elasticache:DescribeCacheSubnetGroups`. If the subnet group is created in the same configuration, pass its resource or module output to `subnet_group`.
+
 ```tf
 module "cluster" {
   source  = "tedilabs/db/aws//modules/elasticache-redis-cluster"
-  version = "~> 0.2.0"
+  version = "~> 0.4.0"
 
   name        = "example-redis-full"
   description = "Managed by Terraform."
@@ -38,6 +40,8 @@ module "cluster" {
     type    = "redis"
     version = "7.1"
   }
+  durability = "default"
+
   node_instance_type = "cache.t4g.micro"
   # node_size          = 1
   cluster_mode = {
@@ -51,7 +55,6 @@ module "cluster" {
   ip_address_type              = "IPv4"
   discovery_ip_address_type    = "IPv4"
   port                         = 6379
-  vpc_id                       = "vpc-0123456789abcdef0"
   subnet_group                 = "example-redis-subnet-group"
   preferred_availability_zones = []
 
@@ -154,7 +157,7 @@ module "cluster" {
 
   timeouts = {
     create = "60m"
-    update = "40m"
+    update = "45m"
     delete = "40m"
   }
 
@@ -169,8 +172,8 @@ module "cluster" {
 
 ### ElastiCache Redis
 
-- [Singie Redis Instance](./examples/elasticache-redis-single)
-- [Multi-AZs Redis Cluster (Sharding Disabled)](./examples/elasticache-redis-multi-az)
+- [Single Redis Instance](./examples/elasticache-redis-single)
+- [Multi-AZs Redis Cluster (Sharding Disabled)](./examples/elasticache-redis-muti-az)
 - [Full Redis Cluster (Sharding Enabled)](./examples/elasticache-redis-full)
 - [Redis Cluster with RBAC(Role Based Access Control)](./examples/elasticache-redis-with-users)
 
