@@ -44,7 +44,7 @@ variable "node_instance_type" {
 }
 
 variable "node_size" {
-  description = "(Optional) The number of cache nodes (primary and replicas) for this ElastiCache Redis cluster will have. If Multi-AZ is enabled, this value must be at least 2. Updates will occur before other modifications. Defaults to `1`. Conflicts with `cluster_mode` when `cluster_mode.enabled` is `true`. In that case, use `cluster_mode.shard_size` to specify the number of shards and replicas for the cluster."
+  description = "(Optional) The number of cache nodes (primary and replicas) for this ElastiCache Redis cluster will have. If Multi-AZ is enabled, this value must be at least 2. Updates will occur before other modifications. Defaults to `1`. Ignored when `cluster_mode.state` is `ENABLED`. In that case, use `cluster_mode.shard_size` and `cluster_mode.replicas` to specify the number of shards and replicas for the cluster."
   type        = number
   default     = 1
   nullable    = false
@@ -70,9 +70,9 @@ variable "cluster_mode" {
        (Required) `id` - The ID for the shard. The shard ID is a 1 to 4 character alphanumeric string.
        (Required) `slots` - The keyspace for this shard. Format is start-end (e.g., 0-5460).
        (Optional) `replicas` - The number of replicas for this shard. If not provided, defaults to the value of `cluster_mode.replicas`.
-       (Optional) `primary_availability_zone` - Availability zone for the primary node in this shard.
-       (Optional) `primary_outpost_arn` - ARN of the Outpost for the primary node in this shard.
-       (Optional) `secondary_availability_zones` - A list of availability zones for replica nodes in this shard.
+       (Required) `primary_availability_zone` - Availability zone for the primary node in this shard.
+       (Optional) `primary_outpost` - ARN of the Outpost for the primary node in this shard.
+       (Required) `secondary_availability_zones` - A list of availability zones for replica nodes in this shard.
        (Optional) `secondary_outposts` - A list of ARNs of the Outposts for replica nodes in this shard.
   EOF
   type = object({
