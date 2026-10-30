@@ -65,7 +65,7 @@ variable "cluster_mode" {
      - `DISABLED` - Cluster mode disabled with a single shard and optional replicas.
      - `COMPATIABLE` - Cluster mode enabled with a single shard and optional replicas. This mode allows for easier migration to cluster mode in the future by enabling cluster mode features while maintaining a single shard configuration.
     (Optional) `shard_size` - The number of shards in this cluster. Changing this number will trigger a resizing operation before other settings modifications. Valid value is from `1` to `500`. Defaults to `3`.
-    (Optional) `replicas` - The number of replicas for each shard. Changing this number will trigger a resizing operation before other settings modifications. Valid value is from `0` to `5`. Defaults to `2`.
+    (Optional) `replicas` - The number of replicas for each shard. Changing this number will trigger a resizing operation before other settings modifications. Must be greater than or equal to `0`. The default AWS limit is `5`; higher values require a quota increase. Defaults to `2`.
     (Optional) `shard_configurations` - A configurations for shard customization. Can be specified only if `shard_size` is set. Each block of `shard_configurations` as defined below.
        (Required) `id` - The ID for the shard. The shard ID is a 1 to 4 character alphanumeric string.
        (Required) `slots` - The keyspace for this shard. Format is start-end (e.g., 0-5460).
@@ -105,11 +105,8 @@ variable "cluster_mode" {
     error_message = "The number of shards should be between `1` and `500`."
   }
   validation {
-    condition = alltrue([
-      var.cluster_mode.replicas >= 0,
-      var.cluster_mode.replicas <= 5,
-    ])
-    error_message = "The number of replicas for each shard should be between `0` and `5`."
+    condition     = var.cluster_mode.replicas >= 0
+    error_message = "The number of replicas for each shard should be greater than or equal to `0`."
   }
 }
 
