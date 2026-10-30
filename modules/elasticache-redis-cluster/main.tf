@@ -114,7 +114,7 @@ resource "aws_elasticache_replication_group" "this" {
   at_rest_encryption_enabled = var.encryption_at_rest.enabled
   kms_key_id                 = var.encryption_at_rest.kms_key
   transit_encryption_enabled = var.encryption_in_transit.enabled
-  transit_encryption_mode    = var.apply_immediately ? var.encryption_in_transit.mode : null
+  transit_encryption_mode    = var.encryption_in_transit.enabled ? var.encryption_in_transit.mode : null
 
 
   ## Maintenance
