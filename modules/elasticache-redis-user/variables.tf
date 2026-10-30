@@ -34,7 +34,7 @@ variable "access_string" {
 variable "authentication" {
   description = <<EOF
   (Optional) A configuration of authentication for this user. `authentication` as defined below.
-    (Optional) `mode` - The authentication mode. Valid values are `iam`, `no-password-required`, and `password`. Defaults to `no-password`.
+    (Optional) `mode` - The authentication mode. Valid values are `iam`, `no-password-required`, and `password`. Defaults to `no-password-required`.
     (Optional) `passwords` - A set of passwords used for this user. You can create up to two passwords for each user. Required if `mode` is set to `password`.
   EOF
   type = object({

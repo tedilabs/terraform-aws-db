@@ -144,7 +144,7 @@ output "maintenance" {
   The configuration for maintenance of the ElastiCache Redis cluster.
     `window` - The weekly time range for when maintenance on the ElastiCache Redis cluster is performed.
     `auto_upgrade_minor_version_enabled` - Whether automatically schedule cluster upgrade to the latest minor version, once it becomes available.
-    `notification_sns_arn` - The ARN of an SNS topic to send ElastiCache notifications to.
+    `notification_sns_topic` - The ARN of an SNS topic to send ElastiCache notifications to.
   EOF
   value = {
     window                             = aws_elasticache_replication_group.this.maintenance_window
