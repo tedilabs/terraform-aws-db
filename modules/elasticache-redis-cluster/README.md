@@ -84,7 +84,7 @@ This module creates following resources.
 | Name | Description |
 | ---- | ----------- |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the ElastiCache Redis cluster. |
-| <a name="output_attributes"></a> [attributes](#output\_attributes) | A set of attributes that applied to the ElastiCache Redis cluster. `multi_az_enabled` indicates whether Multi-AZ is enabled. `muti_az_enabled` is a deprecated alias retained for backward compatibility. |
+| <a name="output_attributes"></a> [attributes](#output\_attributes) | A set of attributes that applied to the ElastiCache Redis cluster. |
 | <a name="output_auth"></a> [auth](#output\_auth) | The configuration for auth of the ElastiCache Redis cluster.<br/>    `user_groups` - A set of User Group IDs to associate with the ElastiCache Redis cluster. |
 | <a name="output_backup"></a> [backup](#output\_backup) | The configuration for backup of the ElastiCache Redis cluster.<br/>    `enabled` - Whether to automatically create a daily backup of a set of replicas.<br/>    `window` - The daily time range (in UTC) during which ElastiCache will begin taking a daily snapshot of the ElastiCache Redis cluster.<br/>    `retention` - The number of days for which automated backups are retained before they are automatically deleted.<br/>    `final_snapshot_name` - The name of a final snapshot to be created when the ElastiCache Redis cluster is deleted. |
 | <a name="output_cluster_mode"></a> [cluster\_mode](#output\_cluster\_mode) | The configuration for cluster mode of the ElastiCache Redis cluster. |
