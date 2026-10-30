@@ -34,6 +34,11 @@ locals {
 # ElastiCache Cluster for Redis
 ###################################################
 
+data "aws_elasticache_subnet_group" "this" {
+  region = var.region
+  name   = var.subnet_group
+}
+
 # INFO: Not supported attributes
 # - `security_group_names`
 resource "aws_elasticache_replication_group" "this" {

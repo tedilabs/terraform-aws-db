@@ -71,7 +71,6 @@ module "cluster" {
   ip_address_type              = "IPv4"
   discovery_ip_address_type    = "IPv4"
   port                         = 6379
-  vpc_id                       = module.vpc.id
   subnet_group                 = module.subnet_group.elasticache_subnet_group.name
   preferred_availability_zones = []
 

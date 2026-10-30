@@ -61,7 +61,6 @@ module "cluster" {
   node_instance_type = "cache.t4g.micro"
   node_size          = 1
 
-  vpc_id       = module.vpc.id
   subnet_group = module.subnet_group.elasticache_subnet_group.name
 
   user_groups = [module.user_group.id]
