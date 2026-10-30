@@ -199,7 +199,7 @@ output "attributes" {
   value = {
     apply_immediately     = aws_elasticache_replication_group.this.apply_immediately
     auto_failover_enabled = aws_elasticache_replication_group.this.automatic_failover_enabled
-    muti_az_enabled       = aws_elasticache_replication_group.this.multi_az_enabled
+    multi_az_enabled      = aws_elasticache_replication_group.this.multi_az_enabled
 
     data_tiering_enabled = aws_elasticache_replication_group.this.data_tiering_enabled
   }
