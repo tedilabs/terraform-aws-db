@@ -92,10 +92,7 @@ resource "aws_elasticache_replication_group" "this" {
 
   subnet_group_name           = var.subnet_group
   preferred_cache_cluster_azs = var.preferred_availability_zones
-  security_group_ids = (var.default_security_group.enabled
-    ? concat(module.security_group[*].id, var.security_groups)
-    : var.security_groups
-  )
+  security_group_ids          = concat(module.security_group[*].id, var.security_groups)
 
 
   ## Parameters
