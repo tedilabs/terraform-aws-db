@@ -21,7 +21,7 @@ locals {
     "DUALSTACK" = "dual_stack"
   }
 
-  is_data_tiering_type = replace(var.node_instance_type, "/^cache\\.[a-z0-9]?d\\..*$/", "1") == "1" ? true : false
+  is_data_tiering_type = replace(var.node_instance_type, "/^cache\\.[a-z0-9]+d\\..*$/", "1") == "1" ? true : false
 
   logging_destination_types = {
     "CLOUDWATCH_LOGS"  = "cloudwatch-logs"
