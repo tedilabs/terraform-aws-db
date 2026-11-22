@@ -7,7 +7,7 @@ locals {
 
   parameters = merge(
     {
-      "cluster-enabled" = var.cluster_mode.state == "ENABLED" ? "yes" : "no"
+      "cluster-enabled" = contains(["ENABLED", "COMPATIBLE"], var.cluster_mode.state) ? "yes" : "no"
     },
     var.default_parameter_group.parameters
   )
