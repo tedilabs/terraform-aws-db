@@ -18,7 +18,7 @@ locals {
 ###################################################
 # User of ElastiCache for Redis
 ###################################################
-# INFO: Deprecated attributes
+# INFO: Not supported attributes
 # - `no_password_required`
 # - `passwords`
 resource "aws_elasticache_user" "this" {
