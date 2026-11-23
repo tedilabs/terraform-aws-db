@@ -430,7 +430,7 @@ variable "logging_slow_log" {
   }
   validation {
     condition     = contains(["CLOUDWATCH_LOGS", "KINESIS_FIREHOSE"], var.logging_slow_log.destination.type)
-    error_message = "Valid value for `destination.type` s `CLOUDWATCH_LOGS` or `KINESIS_FIREHOSE`."
+    error_message = "Valid value for `destination.type` is `CLOUDWATCH_LOGS` or `KINESIS_FIREHOSE`."
   }
 }
 
@@ -460,7 +460,7 @@ variable "logging_engine_log" {
   }
   validation {
     condition     = contains(["CLOUDWATCH_LOGS", "KINESIS_FIREHOSE"], var.logging_engine_log.destination.type)
-    error_message = "Valid value for `destination.type` s `CLOUDWATCH_LOGS` or `KINESIS_FIREHOSE`."
+    error_message = "Valid value for `destination.type` is `CLOUDWATCH_LOGS` or `KINESIS_FIREHOSE`."
   }
 }
 
@@ -475,7 +475,7 @@ variable "multi_az_enabled" {
       !var.multi_az_enabled,
       var.multi_az_enabled && var.auto_failover_enabled,
     ])
-    error_message = "If Muti-AZ Support is enabled, `auto_failover_enabled` must also be enabled."
+    error_message = "If Multi-AZ Support is enabled, `auto_failover_enabled` must also be enabled."
   }
 }
 
