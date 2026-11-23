@@ -196,10 +196,10 @@ variable "default_security_group" {
   (Optional) The configuration of the default security group for the ElastiCache Redis cluster. `default_security_group` block as defined below.
     (Optional) `enabled` - Whether to use the default security group. Defaults to `true`.
     (Optional) `name` - The name of the default security group. If not provided, the cluster name is used for the name of security group.
-    (Optional) `description` - The description of the default security group.
+    (Optional) `description` - The description of the default security group. Defaults to `Managed by Terraform.`.
     (Optional) `ingress_rules` - A list of ingress rules in a security group. You don't need to specify `protocol`, `from_port`, `to_port`. Just specify source information. Defaults to `[{ id = "default", ipv4_cidrs = ["0.0.0.0/0"] }]`. Each block of `ingress_rules` as defined below.
       (Required) `id` - The ID of the ingress rule. This value is only used internally within Terraform code.
-      (Optional) `description` - The description of the rule.
+      (Optional) `description` - The description of the rule. Defaults to `Managed by Terraform.`.
       (Optional) `ipv4_cidrs` - The IPv4 network ranges to allow, in CIDR notation.
       (Optional) `ipv6_cidrs` - The IPv6 network ranges to allow, in CIDR notation.
       (Optional) `prefix_lists` - The prefix list IDs to allow.
@@ -541,7 +541,7 @@ variable "module_tags_enabled" {
 
 variable "resource_group" {
   description = <<EOF
-  (Optional) A configurations of Resource Group for this module. `resource_group` as defined below.
+  (Optional) A configuration of Resource Group for this module. `resource_group` as defined below.
     (Optional) `enabled` - Whether to create Resource Group to find and group AWS resources which are created by this module. Defaults to `true`.
     (Optional) `name` - The name of Resource Group. A Resource Group name can have a maximum of 127 characters, including letters, numbers, hyphens, dots, and underscores. The name cannot start with `AWS` or `aws`. If not provided, a name will be generated using the module name and instance name.
     (Optional) `description` - The description of Resource Group. Defaults to `Managed by Terraform.`.
