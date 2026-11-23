@@ -432,6 +432,13 @@ variable "logging_slow_log" {
     condition     = contains(["CLOUDWATCH_LOGS", "KINESIS_FIREHOSE"], var.logging_slow_log.destination.type)
     error_message = "Valid value for `destination.type` is `CLOUDWATCH_LOGS` or `KINESIS_FIREHOSE`."
   }
+  validation {
+    condition = anytrue([
+      !var.logging_slow_log.enabled,
+      var.logging_slow_log.destination.name != null,
+    ])
+    error_message = "`destination.name` is required if `enabled` is `true`."
+  }
 }
 
 variable "logging_engine_log" {
@@ -461,6 +468,13 @@ variable "logging_engine_log" {
   validation {
     condition     = contains(["CLOUDWATCH_LOGS", "KINESIS_FIREHOSE"], var.logging_engine_log.destination.type)
     error_message = "Valid value for `destination.type` is `CLOUDWATCH_LOGS` or `KINESIS_FIREHOSE`."
+  }
+  validation {
+    condition = anytrue([
+      !var.logging_engine_log.enabled,
+      var.logging_engine_log.destination.name != null,
+    ])
+    error_message = "`destination.name` is required if `enabled` is `true`."
   }
 }
 
