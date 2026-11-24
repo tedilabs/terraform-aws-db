@@ -12,7 +12,7 @@ The `id`, `arn`, and `name` outputs wait for the configured user associations to
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.12 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.16 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.33 |
 | <a name="requirement_telemetry"></a> [telemetry](#requirement\_telemetry) | >= 0.2.0 |
 
