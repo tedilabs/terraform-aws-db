@@ -1,10 +1,2 @@
-# Modules
-- color: "fbca04"
-  description: "This issue or pull request is related to elasticache-redis-cluster module."
-  name: ":floppy_disk: elasticache-redis-cluster"
-- color: "fbca04"
-  description: "This issue or pull request is related to elasticache-redis-user module."
-  name: ":floppy_disk: elasticache-redis-user"
-- color: "fbca04"
-  description: "This issue or pull request is related to elasticache-redis-user-group module."
-  name: ":floppy_disk: elasticache-redis-user-group"
+# ElastiCache module labels are now managed in tedilabs/terraform-aws-elasticache.
+[]

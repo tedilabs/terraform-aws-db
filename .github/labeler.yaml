@@ -1,15 +1,2 @@
-# Modules
-":floppy_disk: elasticache-redis-cluster":
-- changed-files:
-  - any-glob-to-any-file:
-    - modules/elasticache-redis-cluster/**/*
-
-":floppy_disk: elasticache-redis-user":
-- changed-files:
-  - any-glob-to-any-file:
-    - modules/elasticache-redis-user/**/*
-
-":floppy_disk: elasticache-redis-user-group":
-- changed-files:
-  - any-glob-to-any-file:
-    - modules/elasticache-redis-user-group/**/*
+# ElastiCache modules and their path-based labels moved to tedilabs/terraform-aws-elasticache.
+{}
