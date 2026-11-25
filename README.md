@@ -14,10 +14,6 @@ The ElastiCache modules and examples are now maintained in [tedilabs/terraform-a
 | `tedilabs/db/aws//modules/elasticache-redis-user` | `tedilabs/elasticache/aws//modules/redis-user` |
 | `tedilabs/db/aws//modules/elasticache-redis-user-group` | `tedilabs/elasticache/aws//modules/redis-user-group` |
 
-See the [migration guide](https://github.com/tedilabs/terraform-aws-elasticache/blob/main/MIGRATION.md) for source changes, Git sources before the first registry release, and state and Resource Group considerations. After the new package's first registry release, use `version = "~> 0.1.0"` with its module sources.
-
-Keep your existing module block labels and inputs when changing sources, then run `terraform init` and review `terraform plan`. Module metadata tags and default Resource Group names change with the new package and module names; set `resource_group.name` to its existing value if you need to retain that name.
-
 Existing published versions, including [v0.5.1](https://github.com/tedilabs/terraform-aws-db/tree/v0.5.1), remain available at their original tags. Configurations pinned to those releases can continue using the old sources. Configurations following this repository's `main` branch must migrate.
 
 ## Examples
