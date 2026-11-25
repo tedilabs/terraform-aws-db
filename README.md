@@ -4,184 +4,21 @@
 ![GitHub](https://img.shields.io/github/license/tedilabs/terraform-aws-db?color=blue&style=flat-square)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat-square)](https://github.com/pre-commit/pre-commit)
 
-Terraform module which creates db related resources on AWS.
+## ElastiCache modules have moved
 
-- [elasticache-redis-cluster](./modules/elasticache-redis-cluster)
-- [elasticache-redis-user](./modules/elasticache-redis-user)
-- [elasticache-redis-user-group](./modules/elasticache-redis-user-group)
+The ElastiCache modules and examples are now maintained in [tedilabs/terraform-aws-elasticache](https://github.com/tedilabs/terraform-aws-elasticache). They have been removed from this repository's `main` branch. The `elasticache-` prefix has been removed from module and example directory names in the new repository.
 
+| Previous module source | New module source |
+| --- | --- |
+| `tedilabs/db/aws//modules/elasticache-redis-cluster` | `tedilabs/elasticache/aws//modules/redis-cluster` |
+| `tedilabs/db/aws//modules/elasticache-redis-user` | `tedilabs/elasticache/aws//modules/redis-user` |
+| `tedilabs/db/aws//modules/elasticache-redis-user-group` | `tedilabs/elasticache/aws//modules/redis-user-group` |
 
-## Target AWS Services
-
-Terraform Modules from [this package](https://github.com/tedilabs/terraform-aws-db) were written to manage the following AWS Services with Terraform.
-
-- **AWS RDS (Relational Database Service)**
-  - (comming sooon!)
-- **AWS ElastiCache**
-  - Redis Cluster
-  - Redis User RBAC
-
-
-## Usage
-
-### ElastiCache Redis
-
-This example uses an existing ElastiCache subnet group in the configured AWS region. The module derives its VPC ID from the subnet group, so `vpc_id` is no longer an input. Terraform credentials need `elasticache:DescribeCacheSubnetGroups`. If the subnet group is created in the same configuration, pass its resource or module output to `subnet_group`.
-
-```tf
-module "cluster" {
-  source  = "tedilabs/db/aws//modules/elasticache-redis-cluster"
-  version = "~> 0.4.0"
-
-  name        = "example-redis-full"
-  description = "Managed by Terraform."
-
-  engine = {
-    type    = "redis"
-    version = "7.1"
-  }
-  durability = "default"
-
-  node_instance_type = "cache.t4g.micro"
-  # node_size          = 1
-  cluster_mode = {
-    state      = "ENABLED"
-    shard_size = 3
-    replicas   = 2
-  }
-
-
-  ## Network
-  ip_address_type              = "IPv4"
-  discovery_ip_address_type    = "IPv4"
-  port                         = 6379
-  subnet_group                 = "example-redis-subnet-group"
-  preferred_availability_zones = []
-
-  default_security_group = {
-    enabled     = true
-    name        = "example-redis-full-default-sg"
-    description = "Managed by Terraform."
-
-    ingress_rules = [
-      {
-        id         = "all"
-        ipv4_cidrs = ["0.0.0.0/0"]
-      }
-    ]
-  }
-  security_groups = []
-
-
-  ## Parameters
-  default_parameter_group = {
-    enabled     = true
-    name        = "example-redis-full-parameter-group"
-    description = "Managed by Terraform."
-    parameters = {
-      "lazyfree-lazy-eviction"   = "yes"
-      "lazyfree-lazy-expire"     = "yes"
-      "lazyfree-lazy-server-del" = "yes"
-      "rename-commands"          = "KEYS BLOCKED"
-    }
-  }
-  parameter_group = null
-
-
-  ## Auth
-  password                 = sensitive("helloworld!#!!1234")
-  password_update_strategy = "ROTATE"
-  user_groups              = []
-
-
-  ## Encryption
-  encryption_at_rest = {
-    enabled = true
-    kms_key = null
-  }
-  encryption_in_transit = {
-    enabled = true
-    mode    = "required"
-  }
-
-
-  ## Backup
-  backup = {
-    enabled             = true
-    window              = "16:00-17:00"
-    retention           = 1
-    final_snapshot_name = "example-redis-full-final"
-  }
-
-
-  ## Restore
-  restore = {
-    backup_name = null
-    rdb_s3_arns = null
-  }
-
-
-  ## Maintenance
-  maintenance = {
-    window                             = "fri:18:00-fri:20:00"
-    auto_upgrade_minor_version_enabled = true
-    notification_sns_topic             = null
-  }
-
-
-  ## Logging
-  logging_slow_log = {
-    enabled = false
-    format  = "JSON"
-
-    destination = {
-      type = "CLOUDWATCH_LOGS"
-      name = null
-    }
-  }
-  logging_engine_log = {
-    enabled = false
-    format  = "JSON"
-
-    destination = {
-      type = "CLOUDWATCH_LOGS"
-      name = null
-    }
-  }
-
-
-  ## Attributes
-  multi_az_enabled      = true
-  auto_failover_enabled = true
-  apply_immediately     = true
-
-  timeouts = {
-    create = "60m"
-    update = "45m"
-    delete = "40m"
-  }
-
-  tags = {
-    "project" = "terraform-aws-db-examples"
-  }
-}
-```
-
-
-## Examples
-
-### ElastiCache Redis
-
-- [Single Redis Instance](./examples/elasticache-redis-single)
-- [Multi-AZs Redis Cluster (Sharding Disabled)](./examples/elasticache-redis-muti-az)
-- [Full Redis Cluster (Sharding Enabled)](./examples/elasticache-redis-full)
-- [Valkey Cluster with RBAC(Role Based Access Control)](./examples/elasticache-valkey-with-users)
-
+Existing published versions, including [v0.5.1](https://github.com/tedilabs/terraform-aws-db/tree/v0.5.1), remain available at their original tags. Configurations pinned to those releases can continue using the old sources. Configurations following this repository's `main` branch must migrate.
 
 ## Self Promotion
 
 Like this project? Follow the repository on [GitHub](https://github.com/tedilabs/terraform-aws-db). And if you're feeling especially charitable, follow **[posquit0](https://github.com/posquit0)** on GitHub.
-
 
 ## License
 
