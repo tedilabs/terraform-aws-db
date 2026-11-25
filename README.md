@@ -16,13 +16,6 @@ The ElastiCache modules and examples are now maintained in [tedilabs/terraform-a
 
 Existing published versions, including [v0.5.1](https://github.com/tedilabs/terraform-aws-db/tree/v0.5.1), remain available at their original tags. Configurations pinned to those releases can continue using the old sources. Configurations following this repository's `main` branch must migrate.
 
-## Examples
-
-- [Single Redis instance](https://github.com/tedilabs/terraform-aws-elasticache/tree/main/examples/redis-single)
-- [Multi-AZ Redis cluster](https://github.com/tedilabs/terraform-aws-elasticache/tree/main/examples/redis-muti-az)
-- [Redis cluster with sharding](https://github.com/tedilabs/terraform-aws-elasticache/tree/main/examples/redis-full)
-- [Valkey with users and a user group](https://github.com/tedilabs/terraform-aws-elasticache/tree/main/examples/valkey-with-users)
-
 ## Self Promotion
 
 Like this project? Follow the repository on [GitHub](https://github.com/tedilabs/terraform-aws-db). And if you're feeling especially charitable, follow **[posquit0](https://github.com/posquit0)** on GitHub.
